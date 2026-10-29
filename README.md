@@ -5,6 +5,7 @@
 **[Download CPRB-Map-Patcher.exe](https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/CPRB-Map-Patcher.exe)**
  · [All downloads](https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest)
  · [Install video](https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4)
+ · [Nexus Mods page](https://www.nexusmods.com/mbwarband/mods/6853)
 
 > **Tested and stable on Native and Crusade Against Jihad.** Other mods have not been tested in game yet;
 > please [open an issue](https://github.com/champierr/Colored-Political-Regions-Borders/issues) with how it

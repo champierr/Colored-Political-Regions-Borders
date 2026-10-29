@@ -22,6 +22,7 @@ This is [b]Native[/b] with Colored Political Regions & Borders. Pick it in the l
 Want it in another mod? Use the free [b]CPR&B Map Patcher[/b]: pick your mod, press Install, done. Uninstall removes exactly what it added.
 [list]
 [*]Download: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest]GitHub Releases (CPRB-Map-Patcher.exe)[/url]
+[*]Nexus Mods: [url=https://www.nexusmods.com/mbwarband/mods/6853]nexusmods.com/mbwarband/mods/6853[/url]
 [*]Source code and guide: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
 [*]Install video: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4]cprb_install_tutorial.mp4[/url]
 [/list]
@@ -58,6 +59,7 @@ Bu öğe, Colored Political Regions & Borders eklenmiş [b]Native[/b] modudur. L
 Başka bir modda kullanmak için ücretsiz [b]CPR&B Map Patcher[/b] programını kullan: modunu seç, Install'a bas, bitti. Uninstall sadece eklediğini kaldırır.
 [list]
 [*]İndir: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest]GitHub Releases (CPRB-Map-Patcher.exe)[/url]
+[*]Nexus Mods: [url=https://www.nexusmods.com/mbwarband/mods/6853]nexusmods.com/mbwarband/mods/6853[/url]
 [*]Kaynak kod ve rehber: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
 [*]Kurulum videosu: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4]cprb_install_tutorial.mp4[/url]
 [/list]

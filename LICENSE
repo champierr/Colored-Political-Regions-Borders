@@ -1,0 +1,37 @@
+MIT License
+
+Copyright (c) 2026 champierr
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---------------------------------------------------------------------------------
+Third-party files
+
+This license covers the CPR&B code: patcher/*.py (except patcher/warband/),
+tools/, shaders/cprb_map.fxh and the CPR&B changes inside shaders/mb.fx.
+
+The following are by TaleWorlds Entertainment and remain under their terms; they
+are included only so the mod can be built:
+  src/                      Mount & Blade: Warband Module System 1.171
+                            (ported to Python 3)
+  patcher/warband/          headers from that Module System
+  shaders/mb.fx             Warband shader source (TaleWorlds shader kit)
+
+patcher/fx_effect.py reads the compiled Direct3D 9 effect format; its layout
+follows the open source Wine project's d3dx9 effect loader.

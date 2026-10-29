@@ -1,0 +1,74 @@
+TITLE:
+Colored Political Regions & Borders
+
+DESCRIPTION (paste everything below into the Steam Workshop description):
+
+[h1]Colored Political Regions & Borders[/h1]
+A political map for Mount & Blade: Warband. Every town, castle and village region on the world map takes its owner's colour, and countries are separated by a fixed dark border line with a soft glow of each side's colour.
+
+[h2]Features[/h2]
+[list]
+[*][b]Zoom out:[/b] the world map becomes a political map in the factions' own colours (the same colours as the map labels).
+[*][b]Zoom in:[/b] the colour fades away to the normal terrain; borders stay with their coloured glow.
+[*][b]Live:[/b] when a castle or town changes hands, its region and villages change colour right away.
+[*][b]Ctrl+1:[/b] a small panel to set the map colour opacity (0-100 %). The setting is saved with your game.
+[*]Sea and rivers are left untouched.
+[/list]
+
+[h2]This Workshop item[/h2]
+This is [b]Native[/b] with Colored Political Regions & Borders. Pick it in the launcher and start a new game.
+
+[h2]Other mods[/h2]
+Want it in another mod? Use the free [b]CPR&B Map Patcher[/b]: pick your mod, press Install, done. Uninstall removes exactly what it added.
+[list]
+[*]Download: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest]GitHub Releases (CPRB-Map-Patcher.exe)[/url]
+[*]Source code and guide: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
+[*]Install video: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4]cprb_install_tutorial.mp4[/url]
+[/list]
+[b]Tested and stable:[/b] Native and Crusade Against Jihad. [b]Other mods have not been tested yet[/b] - please report how it works in yours!
+If Steam updates a Workshop mod you patched, run the patcher again.
+
+[h2]Requirements[/h2]
+[list]
+[*]DirectX 9 (the launcher's default). OpenGL (Mac/Linux) is not supported.
+[*]Patcher: mods with up to 320 towns, castles and villages and up to 96 factions.
+[/list]
+
+[h2]Credits[/h2]
+Mount & Blade: Warband, its Module System and shader source by TaleWorlds Entertainment.
+
+----------------------------------------------------------------
+
+[h1]Türkçe[/h1]
+Mount & Blade: Warband için politik harita. Dünya haritasındaki her şehir, kale ve köy bölgesi sahibinin rengini alır; ülkeler arasında sabit koyu bir sınır çizgisi ve iki yanında her ülkenin kendi renginde hafif bir hüzme çizilir.
+
+[h2]Özellikler[/h2]
+[list]
+[*][b]Uzaklaşınca:[/b] dünya haritası, faction'ların kendi renkleriyle (harita yazılarıyla aynı renkler) politik haritaya dönüşür.
+[*][b]Yakınlaşınca:[/b] renk kaybolur, fiziki harita görünür; sınırlar renkli hüzmeleriyle kalır.
+[*][b]Canlı:[/b] bir kale veya şehir el değiştirince bölgesi ve köyleri hemen yeni rengini alır.
+[*][b]Ctrl+1:[/b] harita renk opaklığını (%0-100) ayarladığın küçük bir panel açar. Ayar kayıt dosyanla birlikte saklanır.
+[*]Deniz ve nehirler boyanmaz.
+[/list]
+
+[h2]Bu Workshop öğesi[/h2]
+Bu öğe, Colored Political Regions & Borders eklenmiş [b]Native[/b] modudur. Launcher'da seç ve yeni oyun başlat.
+
+[h2]Diğer modlar[/h2]
+Başka bir modda kullanmak için ücretsiz [b]CPR&B Map Patcher[/b] programını kullan: modunu seç, Install'a bas, bitti. Uninstall sadece eklediğini kaldırır.
+[list]
+[*]İndir: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest]GitHub Releases (CPRB-Map-Patcher.exe)[/url]
+[*]Kaynak kod ve rehber: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
+[*]Kurulum videosu: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4]cprb_install_tutorial.mp4[/url]
+[/list]
+[b]Test edildi ve stabil:[/b] Native ve Crusade Against Jihad. [b]Diğer modlar henüz test edilmedi[/b] - kendi modunda nasıl çalıştığını yazarsan sevinirim!
+Steam yamaladığın bir Workshop modunu güncellerse patcher'ı tekrar çalıştır.
+
+[h2]Gereksinimler[/h2]
+[list]
+[*]DirectX 9 (launcher'ın varsayılanı). OpenGL (Mac/Linux) desteklenmiyor.
+[*]Patcher: en fazla 320 şehir/kale/köy ve 96 faction'lı modlar.
+[/list]
+
+[h2]Emeği geçenler[/h2]
+Mount & Blade: Warband, Module System ve shader kaynağı TaleWorlds Entertainment'a aittir.

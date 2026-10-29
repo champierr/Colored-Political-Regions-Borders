@@ -1,0 +1,23 @@
+# downloaded archives and test output
+downloads/
+build_test/
+build_test2/
+
+# Microsoft shader compiler from the TaleWorlds shader kit (not ours to redistribute)
+shaders/fxc.exe
+
+# generated
+shaders/cprb_cells.fxh
+patcher/shaders/
+patcher/build/
+patcher/dist/
+patcher/build_log.txt
+__pycache__/
+*.pyc
+src/ID_*.py
+
+# leftovers and local test output
+src/__pycache__/
+*.log
+release/
+docs/video/

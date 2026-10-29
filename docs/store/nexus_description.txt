@@ -1,106 +1,135 @@
-MOD NAME:
-Colored Political Regions & Borders
-
-SUMMARY (short description field):
-A political map for Warband: regions in their owner's colour, fixed borders with a coloured glow, fades to terrain when you zoom in. Native included; patcher for other mods.
-
-CATEGORY: Visuals and Graphics (or Utilities for the patcher)
-
-FILES TO UPLOAD:
-  Main file:      CPRB-Map-Patcher.exe   - "CPR&B Map Patcher (for any mod)"
-  Main file:      Colored_Political_Regions_and_Borders_Native_v1.1.0.zip - "Native module"
-  Optional file:  cprb_install_tutorial.mp4 (or link the video)
-
-IMAGES: docs/images/cover.jpg (main), gallery_*.jpg
-
-DESCRIPTION (paste everything below):
-
 [center][size=6][b]Colored Political Regions & Borders[/b][/size]
 [size=4]A political map for Mount & Blade: Warband[/size][/center]
 
-Every town, castle and village region on the world map takes its owner's colour, and countries are separated by a fixed dark border line with a soft glow of each side's colour.
+Every town, castle and village region on the world map takes the colour of the kingdom that owns it. Kingdoms are separated by a dark border line with a soft glow in each side's colour. Zoom out and you see a political map; zoom in and you see the normal terrain, with the borders still there.
 
 [size=5][b]Features[/b][/size]
 [list]
-[*][b]Zoom out:[/b] the world map becomes a political map in the factions' own colours (the same colours as the map labels).
-[*][b]Zoom in:[/b] the colour fades away to the normal terrain; borders stay with their coloured glow.
-[*][b]Live:[/b] when a castle or town changes hands, its region and villages change colour right away.
-[*][b]Ctrl+1:[/b] a small panel to set the map colour opacity (0-100 %). The setting is saved with your game.
-[*]Sea and rivers are left untouched.
+[*][b]Zoom out:[/b] the map shows the kingdoms in their own colours (the same colours as the town names on the map).
+[*][b]Zoom in:[/b] the colour fades away and you see the normal terrain. The borders stay.
+[*][b]Always up to date:[/b] when a castle or town is captured, its region and villages change colour right away.
+[*][b]Ctrl + 1:[/b] opens a small panel where you set how strong the colours are (0-100 %). The setting is saved with your game.
+[*]Sea and rivers are not coloured.
+[*]Works with [b]Native[/b] and with other mods through the [b]CPR&B Map Patcher[/b] program.
 [/list]
 
-[size=5][b]Installation[/b][/size]
-[b]Native:[/b] extract [i]Colored_Political_Regions_and_Borders_Native_v1.1.0.zip[/i] into [i]Mount&Blade Warband\Modules\[/i], pick "Colored Political Regions & Borders" in the launcher and start a new game.
+[size=5][b]Which file do I download?[/b][/size]
+[list]
+[*][b]CPRB-Map-Patcher[/b] (recommended): a small program that adds the map to the mod you choose, [b]Native included[/b]. One click to install, one click to remove.
+[*][b]Native module[/b] (optional): a ready mod folder (Native with the map inside). Use it if you don't want to change your original Native.
+[*][b]Install video[/b] (optional): a one minute video showing every step.
+[/list]
+Every download has a [b]HOW_TO_INSTALL.txt[/b] file inside with the same steps.
 
-[b]Any other mod - CPR&B Map Patcher:[/b]
+[size=5][b]How to install (patcher)[/b][/size]
 [list=1]
-[*]Download [i]CPRB-Map-Patcher.exe[/i] (here or from [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest]GitHub Releases[/url]).
-[*]Run it. The app is not code-signed; if Windows SmartScreen warns, click [i]More info → Run anyway[/i].
-[*]Pick your mod (Steam and Workshop mods are listed automatically, or use Browse...).
-[*]Choose the starting opacity and press [b]Install / Update[/b].
-[*]Start Warband with that mod; a new game is recommended.
+[*]Download [b]CPRB-Map-Patcher[/b] from the Files tab and open the zip. Inside are [i]CPRB-Map-Patcher.exe[/i] and [i]HOW_TO_INSTALL.txt[/i].
+[*]Double-click [i]CPRB-Map-Patcher.exe[/i].
+Windows may show a blue window: [i]"Windows protected your PC"[/i]. This happens with small programs that are not signed by a company. Click [i]More info[/i], then [i]Run anyway[/i].
+[*]At the top of the window, click the list and choose your mod (for example [i]Native[/i]). Steam and Steam Workshop mods are listed automatically.
+Not in the list? Click [i]Browse...[/i] and choose the mod's folder (the one with a [i]module.ini[/i] file inside). To find it: Steam > Library > right-click Mount & Blade: Warband > Manage > Browse local files > Modules.
+[*]Optional: set the colour strength with the slider (60 % is a good start).
+[*]Click [b]Install / Update[/b] and wait for the line [i]"Installed CPR&B ... into ..."[/i]. Close the window.
+[*]Start Warband. In the start window (launcher), choose the same mod and click [i]Play[/i]. Start a [b]new game[/b].
+[*]On the world map, press [b]Space[/b] if the game is paused. The colours appear as soon as the game runs.
 [/list]
-[b]Uninstall[/b] in the same app removes exactly what was added (originals are backed up in the mod's CPRB_backup folder).
-If Steam updates a Workshop mod you patched, run the patcher again.
+[b]Uninstall:[/b] open the patcher, choose the same mod, click [b]Uninstall[/b]. Everything goes back exactly as it was (your original files are kept in the mod's [i]CPRB_backup[/i] folder until then).
 
-Mods with their own shaders keep them: only the world map terrain part is replaced, so effects such as waving flags stay.
+[size=5][b]How to install (Native module zip)[/b][/size]
+[list=1]
+[*]Open your Warband [i]Modules[/i] folder: Steam > Library > right-click Mount & Blade: Warband > Manage > Browse local files > Modules.
+[*]Copy the folder [i]Colored Political Regions & Borders[/i] from the zip into [i]Modules[/i].
+[*]Start Warband, choose [i]Colored Political Regions & Borders[/i] in the launcher, click [i]Play[/i] and start a new game.
+[/list]
+
+[size=5][b]Good to know[/b][/size]
+[list]
+[*]When Steam updates a Workshop mod (or you use "Verify integrity of game files"), the patch is removed. Open the patcher and click [b]Install / Update[/b] again.
+[*][b]No colours?[/b] Press Space so the game is not paused. In the launcher click [i]Configure > Video[/i] and set [i]Render Method[/i] to [i]DirectX 9[/i].
+[*]If the patcher shows [i]PROBLEM: ...[/i], that mod cannot be patched; the message says why.
+[/list]
 
 [size=5][b]Compatibility[/b][/size]
 [b]Tested and stable:[/b] Native and Crusade Against Jihad.
-[b]Other mods have not been tested yet[/b] - feedback is very welcome!
+[b]Other mods have not been tested yet.[/b] Please write in the comments how it works in your mod!
 [list]
-[*]DirectX 9 (the launcher's default). OpenGL (Mac/Linux) and WSE2 are not supported.
-[*]Up to 320 towns, castles and villages and up to 96 factions per mod.
-[*]Mods that ship their shaders as source code are not supported yet.
+[*]Windows with DirectX 9 (the launcher's default). Mac/Linux (OpenGL) and WSE2 are not supported.
+[*]Mods with up to 320 towns, castles and villages and up to 96 kingdoms/factions.
+[*]Mods with their own shaders keep their effects (for example waving flags); only the world map part is changed.
 [/list]
 
 [size=5][b]Links[/b][/size]
 [list]
-[*]Source code: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
-[*]Install video: [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4]cprb_install_tutorial.mp4[/url]
+[*]Source code and all downloads: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
 [/list]
 
 [size=5][b]Credits[/b][/size]
-Mount & Blade: Warband, its Module System and shader source by TaleWorlds Entertainment.
+Mount & Blade: Warband, its Module System and shader source are by TaleWorlds Entertainment.
 
 [line]
 
 [center][size=6][b]Türkçe[/b][/size][/center]
 
-Dünya haritasındaki her şehir, kale ve köy bölgesi sahibinin rengini alır; ülkeler arasında sabit koyu bir sınır çizgisi ve iki yanında her ülkenin kendi renginde hafif bir hüzme çizilir.
+Dünya haritasındaki her şehir, kale ve köy bölgesi, onu elinde tutan krallığın rengini alır. Krallıklar arasında koyu bir sınır çizgisi ve iki yanında her krallığın kendi renginde hafif bir hüzme vardır. Uzaklaşınca politik haritayı, yakınlaşınca normal araziyi görürsün; sınırlar her zaman kalır.
 
 [size=5][b]Özellikler[/b][/size]
 [list]
-[*][b]Uzaklaşınca:[/b] dünya haritası, faction'ların kendi renkleriyle (harita yazılarıyla aynı renkler) politik haritaya dönüşür.
-[*][b]Yakınlaşınca:[/b] renk kaybolur, fiziki harita görünür; sınırlar renkli hüzmeleriyle kalır.
-[*][b]Canlı:[/b] bir kale veya şehir el değiştirince bölgesi ve köyleri hemen yeni rengini alır.
-[*][b]Ctrl+1:[/b] harita renk opaklığını (%0-100) ayarladığın küçük bir panel açar. Ayar kayıt dosyanla birlikte saklanır.
+[*][b]Uzaklaşınca:[/b] harita krallıkları kendi renkleriyle gösterir (haritadaki şehir isimleriyle aynı renkler).
+[*][b]Yakınlaşınca:[/b] renk kaybolur, normal arazi görünür. Sınırlar kalır.
+[*][b]Her zaman güncel:[/b] bir kale ya da şehir el değiştirince bölgesi ve köyleri hemen yeni rengini alır.
+[*][b]Ctrl + 1:[/b] renklerin ne kadar güçlü olacağını (%0-100) ayarladığın küçük bir panel açar. Ayar, kayıtlı oyununla birlikte saklanır.
 [*]Deniz ve nehirler boyanmaz.
+[*][b]Native[/b] ile ve [b]CPR&B Map Patcher[/b] programı sayesinde diğer modlarla çalışır.
 [/list]
 
-[size=5][b]Kurulum[/b][/size]
-[b]Native:[/b] [i]Colored_Political_Regions_and_Borders_Native_v1.1.0.zip[/i] dosyasını [i]Mount&Blade Warband\Modules\[/i] klasörüne çıkar, launcher'da "Colored Political Regions & Borders" modunu seç ve yeni oyun başlat.
+[size=5][b]Hangi dosyayı indirmeliyim?[/b][/size]
+[list]
+[*][b]CPRB-Map-Patcher[/b] (önerilen): haritayı seçtiğin moda ekleyen küçük bir program, [b]Native dahil[/b]. Tek tıkla kurulur, tek tıkla kaldırılır.
+[*][b]Native module[/b] (isteğe bağlı): hazır mod klasörü (harita eklenmiş Native). Orijinal Native'ine dokunmak istemiyorsan bunu kullan.
+[*][b]Install video[/b] (isteğe bağlı): bütün adımları gösteren bir dakikalık video.
+[/list]
+Her indirmenin içinde aynı adımların yazdığı bir [b]HOW_TO_INSTALL.txt[/b] dosyası vardır.
 
-[b]Diğer modlar - CPR&B Map Patcher:[/b]
+[size=5][b]Nasıl kurulur (patcher)[/b][/size]
 [list=1]
-[*][i]CPRB-Map-Patcher.exe[/i] dosyasını indir (buradan veya [url=https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest]GitHub Releases[/url]'tan).
-[*]Çalıştır. Uygulama imzalı değil; Windows SmartScreen uyarırsa [i]Ek bilgi → Yine de çalıştır[/i]'a tıkla.
-[*]Modunu seç (Steam ve Workshop modları otomatik listelenir, yoksa Browse...).
-[*]Başlangıç opaklığını seç ve [b]Install / Update[/b]'e bas.
-[*]Warband'ı o modla başlat; yeni oyun önerilir.
+[*]Files (Dosyalar) sekmesinden [b]CPRB-Map-Patcher[/b]'ı indir ve zip'i aç. İçinde [i]CPRB-Map-Patcher.exe[/i] ve [i]HOW_TO_INSTALL.txt[/i] var.
+[*][i]CPRB-Map-Patcher.exe[/i]'ye çift tıkla.
+Windows mavi bir pencere gösterebilir: [i]"Windows bilgisayarınızı korudu"[/i]. Bu, bir şirket tarafından imzalanmamış küçük programlarda olur. [i]Ek bilgi[/i]'ye, sonra [i]Yine de çalıştır[/i]'a tıkla.
+[*]Pencerenin üstündeki listeye tıkla ve modunu seç (örneğin [i]Native[/i]). Steam ve Steam Atölyesi modları otomatik listelenir.
+Listede yok mu? [i]Browse...[/i]'a tıkla ve modun klasörünü seç (içinde [i]module.ini[/i] dosyası olan klasör). Bulmak için: Steam > Kütüphane > Mount & Blade: Warband'a sağ tıkla > Yönet > Yerel dosyalara göz at > Modules.
+[*]İsteğe bağlı: kaydırıcıyla renk gücünü ayarla (%60 iyi bir başlangıç).
+[*][b]Install / Update[/b]'e tıkla ve [i]"Installed CPR&B ... into ..."[/i] satırı çıkana kadar bekle. Pencereyi kapat.
+[*]Warband'ı başlat. Başlangıç penceresinde (launcher) aynı modu seç ve [i]Play[/i]'e tıkla. [b]Yeni oyun[/b] başlat.
+[*]Dünya haritasında oyun duraklatılmışsa [b]Space[/b]'e bas. Oyun akmaya başlayınca renkler gelir.
 [/list]
-Aynı uygulamadaki [b]Uninstall[/b] sadece eklediğini kaldırır (orijinaller modun CPRB_backup klasöründe yedeklenir).
-Steam yamaladığın bir Workshop modunu güncellerse patcher'ı tekrar çalıştır.
+[b]Kaldırma:[/b] patcher'ı aç, aynı modu seç, [b]Uninstall[/b]'a tıkla. Her şey eskisi gibi olur (orijinal dosyaların o zamana kadar modun [i]CPRB_backup[/i] klasöründe saklanır).
 
-Kendi shader'ı olan modlar onları korur: sadece dünya haritası arazi kısmı değiştirilir, dalgalanan bayraklar gibi efektler kalır.
+[size=5][b]Nasıl kurulur (Native module zip)[/b][/size]
+[list=1]
+[*]Warband'ın [i]Modules[/i] klasörünü aç: Steam > Kütüphane > Mount & Blade: Warband'a sağ tıkla > Yönet > Yerel dosyalara göz at > Modules.
+[*]Zip'in içindeki [i]Colored Political Regions & Borders[/i] klasörünü [i]Modules[/i]'ün içine kopyala.
+[*]Warband'ı başlat, launcher'da [i]Colored Political Regions & Borders[/i]'ı seç, [i]Play[/i]'e tıkla ve yeni oyun başlat.
+[/list]
+
+[size=5][b]Bilmekte fayda var[/b][/size]
+[list]
+[*]Steam bir Atölye modunu güncellediğinde (ya da "Oyun dosyalarının bütünlüğünü doğrula" kullanırsan) yama silinir. Patcher'ı açıp tekrar [b]Install / Update[/b]'e bas.
+[*][b]Renk yok mu?[/b] Oyun duraklatılmış olmasın diye Space'e bas. Launcher'da [i]Configure > Video[/i] sekmesinde [i]Render Method[/i]'u [i]DirectX 9[/i] yap.
+[*]Patcher [i]PROBLEM: ...[/i] yazıyorsa o mod yamalanamıyor; mesaj nedenini söyler.
+[/list]
 
 [size=5][b]Uyumluluk[/b][/size]
 [b]Test edildi ve stabil:[/b] Native ve Crusade Against Jihad.
-[b]Diğer modlar henüz test edilmedi[/b] - geri bildirimlerini bekliyorum!
+[b]Diğer modlar henüz test edilmedi.[/b] Kendi modunda nasıl çalıştığını yorumlara yazarsan sevinirim!
 [list]
-[*]DirectX 9 (launcher'ın varsayılanı). OpenGL (Mac/Linux) ve WSE2 desteklenmiyor.
-[*]Mod başına en fazla 320 şehir/kale/köy ve 96 faction.
-[*]Shader'ını kaynak kodu olarak dağıtan modlar henüz desteklenmiyor.
+[*]Windows ve DirectX 9 (launcher'ın varsayılanı). Mac/Linux (OpenGL) ve WSE2 desteklenmiyor.
+[*]En fazla 320 şehir/kale/köy ve 96 krallık/faction'a sahip modlar.
+[*]Kendi shader'ı olan modlar efektlerini korur (örneğin dalgalanan bayraklar); sadece dünya haritası kısmı değişir.
+[/list]
+
+[size=5][b]Linkler[/b][/size]
+[list]
+[*]Kaynak kod ve tüm indirmeler: [url=https://github.com/champierr/Colored-Political-Regions-Borders]github.com/champierr/Colored-Political-Regions-Borders[/url]
 [/list]
 
 [size=5][b]Emeği geçenler[/b][/size]

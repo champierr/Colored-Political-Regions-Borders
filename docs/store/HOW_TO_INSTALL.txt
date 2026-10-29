@@ -1,0 +1,200 @@
+=====================================================================
+ Colored Political Regions & Borders  -  HOW TO INSTALL
+ (Türkçe anlatım aşağıda / Turkish instructions below)
+=====================================================================
+
+WHAT YOU NEED
+  - Mount & Blade: Warband on Windows (Steam or GOG).
+  - Nothing else. You do not need Python or any other program.
+
+---------------------------------------------------------------------
+ STEP 1 - Open the patcher
+---------------------------------------------------------------------
+  1. Double-click "CPRB-Map-Patcher.exe".
+  2. Windows may show a blue window: "Windows protected your PC".
+     This happens with every small program that is not signed by a
+     company. Click the small text "More info", then the
+     "Run anyway" button.
+  3. The "Colored Political Regions & Borders" window opens.
+
+---------------------------------------------------------------------
+ STEP 2 - Choose the mod you want to play with
+---------------------------------------------------------------------
+  1. At the top of the window there is a list. Click it.
+  2. Choose the mod you play, for example "Native" (the normal game)
+     or a mod from the Steam Workshop.
+     The box below the list now shows the mod's name and
+     "CPR&B installed: no".
+
+  The mod is not in the list?
+     Click "Browse..." and choose the mod's folder. It is the folder
+     that contains a file called "module.ini".
+     To find it: open Steam > Library > right-click
+     "Mount & Blade: Warband" > Manage > Browse local files >
+     open the "Modules" folder. Each folder in there is one mod.
+     Workshop mods are in:
+       ...\Steam\steamapps\workshop\content\48700\<a number>\
+
+---------------------------------------------------------------------
+ STEP 3 - Install
+---------------------------------------------------------------------
+  1. Optional: move the "Map colour opacity" slider. 60 % is a good
+     start. You can change it later inside the game.
+  2. Click "Install / Update".
+  3. Wait a few seconds until this line appears:
+       "Installed CPR&B ... into <your mod>"
+  4. Close the window.
+
+  Your original files are saved in the mod's "CPRB_backup" folder.
+
+---------------------------------------------------------------------
+ STEP 4 - Play
+---------------------------------------------------------------------
+  1. Start Mount & Blade: Warband.
+  2. In the small start window (the launcher), choose the same mod in
+     the "Current Module" list and click "Play".
+  3. Start a NEW game (recommended).
+  4. On the world map the regions now have their owners' colours.
+     If the game is paused, press Space once; the colours appear as
+     soon as the game runs.
+  5. Zoom out with the mouse wheel: political map.
+     Zoom in: normal terrain, borders stay.
+
+  Change the colour strength in game:
+     Press Ctrl + 1 on the world map. A small panel opens in the top
+     left corner. Move the slider. Close it with Esc, Ctrl + 1 or
+     "Done". The setting is saved with your saved game.
+
+---------------------------------------------------------------------
+ UNINSTALL
+---------------------------------------------------------------------
+  Open CPRB-Map-Patcher.exe, choose the same mod, click "Uninstall".
+  Everything goes back exactly as it was.
+
+---------------------------------------------------------------------
+ IMPORTANT
+---------------------------------------------------------------------
+  - Steam Workshop mods: when Steam updates the mod, the patch is
+    removed. Just run the patcher and click "Install / Update" again.
+  - If you patch "Native" and Steam's "Verify integrity of game files"
+    runs, the patch is removed too. Install it again the same way.
+
+---------------------------------------------------------------------
+ PROBLEMS?
+---------------------------------------------------------------------
+  No colours on the map:
+     - Press Space so the game is not paused.
+     - In the launcher click "Configure" > "Video" and set
+       "Render Method" to "DirectX 9". Mac/Linux (OpenGL) is not
+       supported.
+     - Open the patcher and check the box says
+       "CPR&B installed: yes".
+  The patcher shows "PROBLEM: ...":
+     That mod cannot be patched (for example it is too big or works
+     differently). The message tells you why.
+
+  Tested and stable: Native and Crusade Against Jihad.
+  Other mods have not been tested yet. Please tell us how it works!
+  https://github.com/champierr/Colored-Political-Regions-Borders
+
+
+=====================================================================
+ Colored Political Regions & Borders  -  NASIL KURULUR (TÜRKÇE)
+=====================================================================
+
+GEREKENLER
+  - Windows'ta Mount & Blade: Warband (Steam veya GOG).
+  - Başka hiçbir şey. Python ya da başka bir program gerekmez.
+
+---------------------------------------------------------------------
+ ADIM 1 - Patcher'ı aç
+---------------------------------------------------------------------
+  1. "CPRB-Map-Patcher.exe" dosyasına çift tıkla.
+  2. Windows mavi bir pencere gösterebilir: "Windows bilgisayarınızı
+     korudu". Bu, bir şirket tarafından imzalanmamış her küçük
+     programda olur. Küçük "Ek bilgi" yazısına, sonra
+     "Yine de çalıştır" düğmesine tıkla.
+  3. "Colored Political Regions & Borders" penceresi açılır.
+
+---------------------------------------------------------------------
+ ADIM 2 - Oynayacağın modu seç
+---------------------------------------------------------------------
+  1. Pencerenin üstünde bir liste var. Ona tıkla.
+  2. Oynadığın modu seç, örneğin "Native" (oyunun normal hali) ya da
+     Steam Atölyesi'nden bir mod.
+     Listenin altındaki kutuda modun adı ve
+     "CPR&B installed: no" yazar.
+
+  Mod listede yok mu?
+     "Browse..." düğmesine tıkla ve modun klasörünü seç. İçinde
+     "module.ini" adlı dosya olan klasördür.
+     Bulmak için: Steam > Kütüphane > "Mount & Blade: Warband"a sağ
+     tıkla > Yönet > Yerel dosyalara göz at > "Modules" klasörünü aç.
+     İçindeki her klasör bir moddur.
+     Atölye (Workshop) modları şurada:
+       ...\Steam\steamapps\workshop\content\48700\<bir sayı>\
+
+---------------------------------------------------------------------
+ ADIM 3 - Kur
+---------------------------------------------------------------------
+  1. İsteğe bağlı: "Map colour opacity" (renk opaklığı) kaydırıcısını
+     ayarla. %60 iyi bir başlangıç. Sonra oyunun içinden de
+     değiştirebilirsin.
+  2. "Install / Update" düğmesine tıkla.
+  3. Şu satır çıkana kadar birkaç saniye bekle:
+       "Installed CPR&B ... into <senin modun>"
+  4. Pencereyi kapat.
+
+  Orijinal dosyaların modun içindeki "CPRB_backup" klasörüne
+  yedeklenir.
+
+---------------------------------------------------------------------
+ ADIM 4 - Oyna
+---------------------------------------------------------------------
+  1. Mount & Blade: Warband'ı başlat.
+  2. Açılan küçük başlangıç penceresinde (launcher) "Current Module"
+     listesinden aynı modu seç ve "Play"e tıkla.
+  3. YENİ bir oyun başlat (önerilir).
+  4. Dünya haritasında bölgeler artık sahiplerinin renginde.
+     Oyun duraklatılmışsa bir kez Space'e bas; oyun akmaya başlayınca
+     renkler gelir.
+  5. Fare tekerleğiyle uzaklaş: politik harita.
+     Yakınlaş: normal arazi, sınırlar kalır.
+
+  Oyunun içinde renk gücünü değiştirmek:
+     Dünya haritasında Ctrl + 1'e bas. Sol üst köşede küçük bir panel
+     açılır. Kaydırıcıyı oynat. Esc, Ctrl + 1 veya "Done" ile kapat.
+     Ayar, kayıtlı oyununla birlikte saklanır.
+
+---------------------------------------------------------------------
+ KALDIRMA
+---------------------------------------------------------------------
+  CPRB-Map-Patcher.exe'yi aç, aynı modu seç, "Uninstall"a tıkla.
+  Her şey eskisi gibi olur.
+
+---------------------------------------------------------------------
+ ÖNEMLİ
+---------------------------------------------------------------------
+  - Steam Atölyesi modları: Steam modu güncellediğinde yama silinir.
+    Patcher'ı açıp tekrar "Install / Update"e basman yeterli.
+  - "Native"i yamaladıysan ve Steam'de "Oyun dosyalarının
+    bütünlüğünü doğrula" çalışırsa yama yine silinir. Aynı şekilde
+    tekrar kur.
+
+---------------------------------------------------------------------
+ SORUN MU VAR?
+---------------------------------------------------------------------
+  Haritada renk yok:
+     - Oyun duraklatılmış olmasın diye Space'e bas.
+     - Launcher'da "Configure" > "Video" sekmesinde "Render Method"u
+       "DirectX 9" yap. Mac/Linux (OpenGL) desteklenmiyor.
+     - Patcher'ı aç ve kutuda "CPR&B installed: yes" yazdığını
+       kontrol et.
+  Patcher "PROBLEM: ..." yazıyor:
+     O mod yamalanamıyor (örneğin çok büyük ya da farklı çalışıyor).
+     Mesaj nedenini söyler.
+
+  Test edildi ve stabil: Native ve Crusade Against Jihad.
+  Diğer modlar henüz test edilmedi. Nasıl çalıştığını yazarsan
+  sevinirim!
+  https://github.com/champierr/Colored-Political-Regions-Borders

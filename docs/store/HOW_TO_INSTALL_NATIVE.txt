@@ -1,0 +1,65 @@
+=====================================================================
+ Colored Political Regions & Borders (Native)  -  HOW TO INSTALL
+ (Türkçe anlatım aşağıda / Turkish instructions below)
+=====================================================================
+
+This zip is a separate mod: the normal game (Native) with the
+political map already inside. Your original Native stays untouched.
+
+  Easier way: the CPR&B Map Patcher can also add the map to your own
+  Native (and to other mods) with one click. See the other download.
+
+  1. Find your Warband "Modules" folder:
+     Steam > Library > right-click "Mount & Blade: Warband" >
+     Manage > Browse local files > open "Modules".
+     (GOG: usually C:\GOG Games\Mount & Blade Warband\Modules)
+  2. Copy the folder "Colored Political Regions & Borders" from this
+     zip into that "Modules" folder.
+     (Right-click the zip > Extract All..., then copy the folder.)
+     Check: Modules\Colored Political Regions & Borders\module.ini
+     must exist.
+  3. Start Mount & Blade: Warband. In the small start window
+     (launcher) choose "Colored Political Regions & Borders" in the
+     mod list and click "Play".
+  4. Start a NEW game. On the world map press Space if the game is
+     paused; the colours appear when the game runs.
+  5. Ctrl + 1 on the world map: change the colour strength.
+
+  Uninstall: delete the folder
+  Modules\Colored Political Regions & Borders
+
+  No colours? In the launcher click "Configure" > "Video" and set
+  "Render Method" to "DirectX 9".
+
+
+=====================================================================
+ Colored Political Regions & Borders (Native)  -  NASIL KURULUR
+=====================================================================
+
+Bu zip ayrı bir moddur: politik harita eklenmiş normal oyun (Native).
+Orijinal Native'ine dokunulmaz.
+
+  Daha kolay yol: CPR&B Map Patcher, haritayı tek tıkla kendi
+  Native'ine (ve diğer modlara) da ekleyebilir. Diğer indirmeye bak.
+
+  1. Warband'ın "Modules" klasörünü bul:
+     Steam > Kütüphane > "Mount & Blade: Warband"a sağ tıkla >
+     Yönet > Yerel dosyalara göz at > "Modules" klasörünü aç.
+     (GOG: genelde C:\GOG Games\Mount & Blade Warband\Modules)
+  2. Bu zip'in içindeki "Colored Political Regions & Borders"
+     klasörünü o "Modules" klasörünün içine kopyala.
+     (Zip'e sağ tıkla > Tümünü ayıkla..., sonra klasörü kopyala.)
+     Kontrol: Modules\Colored Political Regions & Borders\module.ini
+     dosyası olmalı.
+  3. Mount & Blade: Warband'ı başlat. Açılan küçük başlangıç
+     penceresinde (launcher) mod listesinden "Colored Political
+     Regions & Borders"ı seç ve "Play"e tıkla.
+  4. YENİ bir oyun başlat. Oyun duraklatılmışsa dünya haritasında
+     Space'e bas; oyun akınca renkler gelir.
+  5. Dünya haritasında Ctrl + 1: renk gücünü değiştir.
+
+  Kaldırma: Modules\Colored Political Regions & Borders klasörünü
+  sil.
+
+  Renk yok mu? Launcher'da "Configure" > "Video" sekmesinde
+  "Render Method"u "DirectX 9" yap.

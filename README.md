@@ -6,6 +6,7 @@
  · [All downloads](https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest)
  · [Install video](https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest/download/cprb_install_tutorial.mp4)
  · [Nexus Mods page](https://www.nexusmods.com/mbwarband/mods/6853)
+ · [Bannerlord version](https://github.com/champierr/Colored-Political-Regions-Borders-Bannerlord)
 
 > **Tested and stable on Native and Crusade Against Jihad.** Other mods have not been tested in game yet;
 > please [open an issue](https://github.com/champierr/Colored-Political-Regions-Borders/issues) with how it
@@ -103,6 +104,8 @@ Mount & Blade: Warband, its Module System and shader source are by TaleWorlds En
 sahibinin rengini alır, ülkeler arasında sabit siyah bir sınır ve iki yanında ülkelerin kendi renginde hafif
 bir hüzme çizilir. Yakınlaşınca renk kaybolur ve fiziki harita kalır; sınırlar kalır. Renkler oyunun kendi
 faction renkleridir (harita yazılarıyla aynı).
+
+**Bannerlord sürümü:** [Colored-Political-Regions-Borders-Bannerlord](https://github.com/champierr/Colored-Political-Regions-Borders-Bannerlord).
 
 **Test durumu:** Native ve Crusade Against Jihad'da test edildi ve stabil. Diğer modlar oyunda henüz test edilmedi.
 

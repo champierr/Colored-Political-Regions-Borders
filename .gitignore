@@ -21,3 +21,6 @@ src/__pycache__/
 *.log
 release/
 docs/video/
+
+# the Bannerlord version is its own repository (Colored-Political-Regions-Borders-Bannerlord)
+bannerlord/

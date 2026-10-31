@@ -11,7 +11,8 @@ A political map for Mount & Blade: Warband. Every town, castle and village regio
 [*][b]Zoom out:[/b] the world map becomes a political map in the factions' own colours (the same colours as the map labels).
 [*][b]Zoom in:[/b] the colour fades away to the normal terrain; borders stay with their coloured glow.
 [*][b]Live:[/b] when a castle or town changes hands, its region and villages change colour right away.
-[*][b]Ctrl+1:[/b] a small panel to set the map colour opacity (0-100 %). The setting is saved with your game.
+[*][b]Ctrl+1:[/b] a small panel to set the map colour opacity (0-100 %). Let go of the bar and the map shows it; Done saves it with your game.
+[*][b]Ctrl+2:[/b] pick your own kingdom's colour; let go of the mouse and your land shows it, Done saves it. Needs a kingdom of your own.
 [*]Sea and rivers are left untouched.
 [/list]
 
@@ -48,7 +49,8 @@ Mount & Blade: Warband için politik harita. Dünya haritasındaki her şehir, k
 [*][b]Uzaklaşınca:[/b] dünya haritası, faction'ların kendi renkleriyle (harita yazılarıyla aynı renkler) politik haritaya dönüşür.
 [*][b]Yakınlaşınca:[/b] renk kaybolur, fiziki harita görünür; sınırlar renkli hüzmeleriyle kalır.
 [*][b]Canlı:[/b] bir kale veya şehir el değiştirince bölgesi ve köyleri hemen yeni rengini alır.
-[*][b]Ctrl+1:[/b] harita renk opaklığını (%0-100) ayarladığın küçük bir panel açar. Ayar kayıt dosyanla birlikte saklanır.
+[*][b]Ctrl+1:[/b] harita renk opaklığını (%0-100) ayarladığın küçük bir panel açar. Çubuğu bırakınca harita gösterir; Done kayıt dosyana kaydeder.
+[*][b]Ctrl+2:[/b] kendi krallığının rengini seç; fareyi bırakınca toprakların değişir, Done kaydeder. Kendi krallığın olmalı.
 [*]Deniz ve nehirler boyanmaz.
 [/list]
 

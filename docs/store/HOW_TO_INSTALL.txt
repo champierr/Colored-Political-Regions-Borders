@@ -62,8 +62,14 @@ WHAT YOU NEED
 
   Change the colour strength in game:
      Press Ctrl + 1 on the world map. A small panel opens in the top
-     left corner. Move the slider. Close it with Esc, Ctrl + 1 or
-     "Done". The setting is saved with your saved game.
+     left corner. Drag the bar and let go: the map shows it. "Done"
+     saves it with your saved game; Esc or "Cancel" goes back.
+
+  Choose your own kingdom's colour:
+     Once you have a kingdom of your own (a town, castle or village
+     you hold for yourself), press Ctrl + 2. Click or drag in the
+     colours and let go: your land shows it. "Done" saves it, Esc or
+     "Cancel" brings the old colour back.
 
 ---------------------------------------------------------------------
  UNINSTALL
@@ -163,8 +169,14 @@ GEREKENLER
 
   Oyunun içinde renk gücünü değiştirmek:
      Dünya haritasında Ctrl + 1'e bas. Sol üst köşede küçük bir panel
-     açılır. Kaydırıcıyı oynat. Esc, Ctrl + 1 veya "Done" ile kapat.
-     Ayar, kayıtlı oyununla birlikte saklanır.
+     açılır. Çubuğu sürükleyip bırak: harita gösterir. "Done" kayıtlı
+     oyununa kaydeder; Esc veya "Cancel" geri alır.
+
+  Kendi krallığının rengini seçmek:
+     Kendi krallığın olunca (kendine ait bir şehir, kale ya da köy)
+     Ctrl + 2'ye bas. Renklere tıkla ya da sürükleyip bırak;
+     toprakların değişir. "Done" kaydeder, Esc veya "Cancel" eski rengi
+     geri getirir.
 
 ---------------------------------------------------------------------
  KALDIRMA

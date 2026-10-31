@@ -8,7 +8,8 @@ Every town, castle and village region on the world map takes the colour of the k
 [*][b]Zoom out:[/b] the map shows the kingdoms in their own colours (the same colours as the town names on the map).
 [*][b]Zoom in:[/b] the colour fades away and you see the normal terrain. The borders stay.
 [*][b]Always up to date:[/b] when a castle or town is captured, its region and villages change colour right away.
-[*][b]Ctrl + 1:[/b] opens a small panel where you set how strong the colours are (0-100 %). The setting is saved with your game.
+[*][b]Ctrl + 1:[/b] opens a small panel where you set how strong the colours are (0-100 %). Let go of the bar and the map shows it; Done saves it with your game, Esc or Cancel goes back.
+[*][b]Ctrl + 2:[/b] pick your own kingdom's colour from a colour field. Let go of the mouse and your land, borders and town names show it; Done saves it with your game, Esc or Cancel brings the old colour back. Needs a kingdom of your own (a town, castle or village you hold for yourself).
 [*]Sea and rivers are not coloured.
 [*]Works with [b]Native[/b] and with other mods through the [b]CPR&B Map Patcher[/b] program.
 [/list]
@@ -77,7 +78,8 @@ Dünya haritasındaki her şehir, kale ve köy bölgesi, onu elinde tutan krall�
 [*][b]Uzaklaşınca:[/b] harita krallıkları kendi renkleriyle gösterir (haritadaki şehir isimleriyle aynı renkler).
 [*][b]Yakınlaşınca:[/b] renk kaybolur, normal arazi görünür. Sınırlar kalır.
 [*][b]Her zaman güncel:[/b] bir kale ya da şehir el değiştirince bölgesi ve köyleri hemen yeni rengini alır.
-[*][b]Ctrl + 1:[/b] renklerin ne kadar güçlü olacağını (%0-100) ayarladığın küçük bir panel açar. Ayar, kayıtlı oyununla birlikte saklanır.
+[*][b]Ctrl + 1:[/b] renklerin ne kadar güçlü olacağını (%0-100) ayarladığın küçük bir panel açar. Çubuğu bırakınca harita gösterir; Done kayıtlı oyununa kaydeder, Esc ya da Cancel geri alır.
+[*][b]Ctrl + 2:[/b] kendi krallığının rengini bir renk alanından seç. Fareyi bırakınca toprakların, sınırların ve şehir isimleri değişir; Done kaydeder, Esc ya da Cancel eski rengi geri getirir. Kendi krallığın olmalı (kendine ait bir şehir, kale ya da köy).
 [*]Deniz ve nehirler boyanmaz.
 [*][b]Native[/b] ile ve [b]CPR&B Map Patcher[/b] programı sayesinde diğer modlarla çalışır.
 [/list]

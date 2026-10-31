@@ -24,6 +24,8 @@ political map already inside. Your original Native stays untouched.
   4. Start a NEW game. On the world map press Space if the game is
      paused; the colours appear when the game runs.
   5. Ctrl + 1 on the world map: change the colour strength.
+     Ctrl + 2: your own kingdom's colour (once you hold a town,
+     castle or village for yourself).
 
   Uninstall: delete the folder
   Modules\Colored Political Regions & Borders
@@ -57,6 +59,8 @@ Orijinal Native'ine dokunulmaz.
   4. YENİ bir oyun başlat. Oyun duraklatılmışsa dünya haritasında
      Space'e bas; oyun akınca renkler gelir.
   5. Dünya haritasında Ctrl + 1: renk gücünü değiştir.
+     Ctrl + 2: kendi krallığının rengi (kendine ait bir şehir, kale
+     ya da köyün olunca).
 
   Kaldırma: Modules\Colored Political Regions & Borders klasörünü
   sil.

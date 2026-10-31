@@ -78,6 +78,10 @@ def native_overview(): return screen("native_overview.webp")
 def native_zoom(): return screen("native_border_zoom.webp")
 def cj_anatolia(): return screen("cj_anatolia.jpg", (0, 20, 1920, 930))
 def cj_panel(): return screen("cj_settings_panel.jpg", (0, 14, 1920, 930))
+def native_picker(): return screen("native_kingdom_colour.jpg", (258, 0, 1920, 935))   # 16:9, the whole panel
+def picker_before(): return screen("native_kingdom_colour_before.jpg", (934, 0, 1905, 930))
+def picker_after(): return screen("native_kingdom_colour.jpg", (934, 0, 1905, 930))
+def native_kingdom_map(): return screen("native_kingdom_colour_map.jpg", (0, 20, 1920, 930))
 
 
 # --------------------------------------------------------------------------------------------- images
@@ -122,6 +126,17 @@ def make_comparison():
   img.save(os.path.join(IMAGES, "gallery_zoom_levels.jpg"), quality=90)
 
 
+def make_kingdom_colour_compare():
+  img = Image.new("RGB", (W, H), INK)
+  img.paste(cover_fit(picker_before(), (940, 900)), (13, 160))
+  img.paste(cover_fit(picker_after(), (940, 900)), (967, 160))
+  d = ImageDraw.Draw(img)
+  text_center(d, 30, "Ctrl+2: your kingdom in a colour of your own", title_font(52), GOLD, W)
+  d.text((40, 1070 - 50), "Before: the default red", font=body_font(32), fill=PARCHMENT)
+  d.text((994, 1070 - 50), "After: picked in game", font=body_font(32), fill=PARCHMENT)
+  img.save(os.path.join(IMAGES, "gallery_kingdom_colour_compare.jpg"), quality=90)
+
+
 def make_gallery(name, img, caption):
   img = cover_fit(img, (W, H))
   img = gradient_band(img, 860, H, 235)
@@ -139,6 +154,9 @@ def make_images():
   make_gallery("border_glow", native_zoom(), "Zoomed in: the terrain stays, borders keep a glow of each side's colour")
   make_gallery("crusade_against_jihad", cj_anatolia(), "Crusade Against Jihad: 269 regions, 68 factions, the mod's own colours")
   make_gallery("settings_panel", cj_panel(), "Ctrl+1: map colour opacity, saved with your game")
+  make_gallery("kingdom_colour", native_picker(), "Ctrl+2: pick your kingdom's colour, let go and the map shows it")
+  make_kingdom_colour_compare()
+  make_gallery("kingdom_colour_map", native_kingdom_map(), "Zoomed out: your whole realm in the colour you picked")
 
 
 # ---------------------------------------------------------------------------------------------- icon

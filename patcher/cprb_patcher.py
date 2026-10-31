@@ -2,10 +2,11 @@
 
 The political map lives in the world map terrain shaders. They need the position and owner of every center
 and the colour of every faction each frame, so the patcher appends to the mod's compiled files:
-  scripts.txt          script cprb_update_map: sends that data with set_shader_param_float4, and opens
-                       the settings window on Ctrl+1
-  simple_triggers.txt  a trigger calling it every frame
-  presentations.txt    the settings window (map colour opacity slider)
+  scripts.txt          script cprb_update_map: sends that data with set_shader_param_float4, keeps the
+                       player's kingdom in the colour chosen in game, and opens the windows on Ctrl+1 and
+                       Ctrl+2; script cprb_hsl_to_rgb for the colour picker
+  simple_triggers.txt  a trigger calling cprb_update_map every frame
+  presentations.txt    the settings window (Ctrl+1, map colour opacity) and the kingdom colour picker (Ctrl+2)
   quick_strings.txt    shader parameter names and window texts
 Everything is appended at the end, so no existing id moves. The shaders are installed as follows:
   - mod without shaders of its own: the CPR&B shaders are added (mb_2a.fxo, mb_2b.fxo)
@@ -26,9 +27,12 @@ from warband.header_operations import *
 from warband.header_triggers import *
 from warband.header_presentations import *
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 SCRIPT_NAME = "cprb_update_map"
+HSL_SCRIPT = "cprb_hsl_to_rgb"
 PRESENTATION_NAME = "cprb_settings"
+PICKER_NAME = "cprb_kingdom_colour"
+PLAYER_KINGDOM = "fac_player_supporters_faction"   # the kingdom the player founds (Native and most mods)
 BACKUP_DIR = "CPRB_backup"
 MANIFEST = "install.json"
 SHADER_FILES = ("mb_2a.fxo", "mb_2b.fxo")
@@ -40,6 +44,23 @@ DEFAULT_OPACITY = 60         # percent, used until the player changes it in game
 SLOT_OPACITY = 7319          # opacity percent + 1 (0: never set)
 SLOT_SLIDER, SLOT_VALUE_TEXT, SLOT_DONE = 7320, 7321, 7322
 SLOT_JUST_OPENED = 7323      # 1 until the window's first frame, so the Ctrl+1 that opened it does not close it
+# the player's kingdom colour (Ctrl+2), kept in the savegame like the opacity
+SLOT_KINGDOM_COLOUR = 7324   # chosen colour + 1 (0: never chosen, the mod's own colour stays)
+SLOT_PREVIEW_COLOUR = 7325   # colour + 1 shown while the picker is open (0: none)
+SLOT_OLD_COLOUR = 7326       # the kingdom's colour when the picker opened (-1: no kingdom)
+SLOT_HUE, SLOT_SAT, SLOT_LIGHT = 7327, 7328, 7329    # picker state: 0-359, 0-1000, 0-1000
+SLOT_DRAG = 7330             # 0, 1 while dragging in the colour field, 2 in the lightness bar
+SLOT_FIELD_MARK, SLOT_BAR_MARK, SLOT_SWATCH, SLOT_RGB_TEXT = 7331, 7332, 7333, 7334
+SLOT_PICK_DONE, SLOT_PICK_CANCEL, SLOT_PICK_OPENED = 7335, 7336, 7337
+SLOT_FIELD_MARK_IN, SLOT_BAR_MARK_IN = 7338, 7339
+SLOT_BAR_CELLS = 7340        # 7340.. the overlay of every lightness bar cell
+SLOT_OPACITY_PREVIEW = 7360  # opacity + 1 shown while the settings window is open (0: none); Done saves it
+SLOT_CANCEL = 7361           # the settings window's Cancel button
+SLOT_OPACITY_DRAG = 7363     # 1 while dragging the opacity bar
+SLOT_REOPEN = 7364           # frames until a window closed to show the map opens again (0: none)
+SLOT_REOPEN_WHICH = 7365     # that window: 1 settings, 2 kingdom colour; read and cleared when it opens
+SLOT_PRESSED = 7366          # the button slot the left mouse button went down on (0: none)
+SLOT_SHOWN_OPACITY, SLOT_SHOWN_COLOUR = 7367, 7368   # value + 1 the map was last drawn with
 
 # world map terrain techniques that carry the CPR&B code
 MAP_TECHNIQUES = [base + suffix for base in ("diffuse_map", "diffuse_map_bump", "map_mountain", "map_mountain_bump")
@@ -99,6 +120,7 @@ class ModInfo:
     self.name = self._module_name()
     self.centers = self._centers()             # [(party index, x, y)]
     self.num_factions = int(_read_lines(self.path("factions.txt"))[1].split()[0])
+    self.factions = self._factions()           # {"fac_...": index}
     self.meshes = dict((line.split()[0], i) for i, line in enumerate(_read_lines(self.path("meshes.txt"))[1:])
                        if line.strip())
     self.installed = self._manifest()
@@ -120,6 +142,16 @@ class ModInfo:
       if len(tokens) > 15 and tokens[0] == "1" and CENTER_ID.match(tokens[3]):
         centers.append((int(tokens[1]), float(tokens[14]), float(tokens[15])))
     return centers
+
+  def _factions(self):
+    """Faction ids in file order; each faction starts with a line "[0] fac_<id> <name> <flags> <colour>"."""
+    result = {}
+    for line in _read_lines(self.path("factions.txt"))[2:]:
+      for token in line.split()[:2]:
+        if token.startswith("fac_"):
+          result.setdefault(token, len(result))
+          break
+    return result
 
   def _manifest(self):
     path = os.path.join(self.folder, BACKUP_DIR, MANIFEST)
@@ -148,6 +180,8 @@ class ModInfo:
   def problems(self):
     """Reasons the mod cannot be patched."""
     result = []
+    if "mesh_white_plane" not in self.meshes:
+      result.append("The mod has no mesh_white_plane, which the CPR&B windows are drawn with.")
     if not self.centers:
       result.append("No towns, castles or villages found (party ids p_town_*, p_castle_*, p_village_*).")
     if self.num_factions > MAX_FACTIONS:
@@ -189,9 +223,27 @@ def _quantize(coordinate):
   return max(1, min(16382, int(round((coordinate + 2048.0) * 4.0))))
 
 
-def update_script_ops(centers, num_factions, default_opacity):
+def kingdom_colour_ops(kingdom):
+  """The player's kingdom in the colour shown in the picker, or else the one chosen with it, if any."""
+  if kingdom is None:
+    return []
+  return [(troop_get_slot, ":want", "trp_player", SLOT_PREVIEW_COLOUR),
+          (try_begin),
+            (le, ":want", 0),
+            (troop_get_slot, ":want", "trp_player", SLOT_KINGDOM_COLOUR),
+          (try_end),
+          (try_begin),
+            (gt, ":want", 0),
+            (val_sub, ":want", 1),
+            (faction_get_color, ":now", kingdom),
+            (neq, ":now", ":want"),
+            (faction_set_color, kingdom, ":want"),
+          (try_end)]
+
+
+def update_script_ops(centers, num_factions, default_opacity, kingdom):
   """script cprb_update_map, run every frame."""
-  ops = []
+  ops = kingdom_colour_ops(kingdom)          # first, so the shader gets the colour in the same frame
   # centers, two per parameter: (owner * 16384 + xq, yq, owner * 16384 + xq, yq)
   for k in range((len(centers) + 1) // 2):
     values = []
@@ -220,8 +272,13 @@ def update_script_ops(centers, num_factions, default_opacity):
       else:
         ops.append((assign, slot, 0))
     ops.append((set_shader_param_float4, "@cprbc%d" % g, ":colour_0", ":colour_1", ":colour_2", ":colour_3"))
-  # opacity in percent, kept in the savegame (player troop slot, stored + 1 so 0 means never set)
-  ops += [(troop_get_slot, ":opacity", "trp_player", SLOT_OPACITY),
+  # opacity in percent: the one shown in the settings window, or else the saved one (player troop slots,
+  # stored + 1 so 0 means not set), or else the default
+  ops += [(troop_get_slot, ":opacity", "trp_player", SLOT_OPACITY_PREVIEW),
+          (try_begin),
+            (le, ":opacity", 0),
+            (troop_get_slot, ":opacity", "trp_player", SLOT_OPACITY),
+          (try_end),
           (try_begin),
             (le, ":opacity", 0),
             (assign, ":opacity", default_opacity + 1),
@@ -229,14 +286,62 @@ def update_script_ops(centers, num_factions, default_opacity):
           (val_sub, ":opacity", 1),
           (set_shader_param_float, "@cprbopacity", ":opacity"),
           (set_shader_param_float, "@cprbunit", 1)]
-  # Ctrl+1 opens the settings window
-  ops += [(try_begin),
-            (this_or_next|key_is_down, key_left_control),
-            (key_is_down, key_right_control),
-            (key_clicked, key_1),
+  # Ctrl+1 opens the settings window, Ctrl+2 the kingdom colour picker
+  for key, name in ((key_1, PRESENTATION_NAME), (key_2, PICKER_NAME)):
+    ops += [(try_begin),
+              (this_or_next|key_is_down, key_left_control),
+              (key_is_down, key_right_control),
+              (key_clicked, key),
+              (neg|is_presentation_active, "prsnt_" + PRESENTATION_NAME),
+              (neg|is_presentation_active, "prsnt_" + PICKER_NAME),
+              (start_presentation, "prsnt_" + name),
+            (try_end)]
+  # a window closed for a moment so the game draws the map with the new values opens again (_show_on_map)
+  ops += [(troop_get_slot, ":reopen", "trp_player", SLOT_REOPEN),
+          (try_begin),
+            (gt, ":reopen", 0),
             (neg|is_presentation_active, "prsnt_" + PRESENTATION_NAME),
-            (start_presentation, "prsnt_" + PRESENTATION_NAME),
+            (neg|is_presentation_active, "prsnt_" + PICKER_NAME),
+            (val_sub, ":reopen", 1),
+            (troop_set_slot, "trp_player", SLOT_REOPEN, ":reopen"),
+            (eq, ":reopen", 0),
+            (try_begin),
+              (troop_slot_eq, "trp_player", SLOT_REOPEN_WHICH, 1),
+              (start_presentation, "prsnt_" + PRESENTATION_NAME),
+            (else_try),
+              (start_presentation, "prsnt_" + PICKER_NAME),
+            (try_end),
           (try_end)]
+  return ops
+
+
+def hsl_script_ops():
+  """script cprb_hsl_to_rgb (hue 0-359, saturation 0-1000, lightness 0-1000): reg0 = 0xRRGGBB."""
+  ops = [(store_script_param, ":h", 1),
+         (store_script_param, ":s", 2),
+         (store_script_param, ":l", 3),
+         # chroma c = (1 - |2l - 1|) s, x = c (1 - |(h / 60) mod 2 - 1|), m = l - c / 2   (all * 1000)
+         (store_mul, ":c", ":l", 2), (val_sub, ":c", 1000), (val_abs, ":c"),
+         (store_sub, ":c", 1000, ":c"), (val_mul, ":c", ":s"), (val_div, ":c", 1000),
+         (store_mul, ":x", ":h", 1000), (val_div, ":x", 60), (val_mod, ":x", 2000), (val_sub, ":x", 1000),
+         (val_abs, ":x"), (store_sub, ":x", 1000, ":x"), (val_mul, ":x", ":c"), (val_div, ":x", 1000),
+         (store_div, ":m", ":c", 2), (store_sub, ":m", ":l", ":m"),
+         (store_div, ":sector", ":h", 60),
+         (assign, ":r", 0), (assign, ":g", 0), (assign, ":b", 0)]
+  sectors = [(":c", ":x", None), (":x", ":c", None), (None, ":c", ":x"),
+             (None, ":x", ":c"), (":x", None, ":c"), (":c", None, ":x")]
+  for n, (r, g, b) in enumerate(sectors):
+    ops += [(else_try) if n else (try_begin)]
+    if n < 5:
+      ops.append((eq, ":sector", n))
+    for channel, value in ((":r", r), (":g", g), (":b", b)):
+      if value:
+        ops.append((assign, channel, value))
+  ops.append(try_end)
+  for channel in (":r", ":g", ":b"):
+    ops += [(val_add, channel, ":m"), (val_mul, channel, 255), (val_add, channel, 500), (val_div, channel, 1000),
+            (val_clamp, channel, 0, 256)]
+  ops += [(store_mul, reg0, ":r", 0x10000), (val_mul, ":g", 0x100), (val_add, reg0, ":g"), (val_add, reg0, ":b")]
   return ops
 
 
@@ -252,65 +357,451 @@ def _text(overlay, text, x, y, scale, colour):
   return ops + ([(overlay_set_color, overlay, colour)] if colour is not None else [])
 
 
-def settings_presentation(default_opacity, has_panel_mesh):
-  """The settings window: a small panel in the top left corner with the map colour opacity slider.
-  Screen units are 1000 wide and 750 high. A slider's bar is drawn about 16 units above its position."""
-  white = 0xFFFFFF if has_panel_mesh else None            # light text needs the dark panel behind it
-  grey = 0xBBBBBB if has_panel_mesh else None
-  load = [(set_fixed_point_multiplier, 1000)]
-  if has_panel_mesh:
-    # mesh_white_plane is 20 screen units at size 1000
-    load += [(create_mesh_overlay, reg1, "mesh_white_plane"),
-             (overlay_set_color, reg1, 0x000000),
-             (overlay_set_alpha, reg1, 0xC0)] + _place(reg1, 10, 540, (18000, 10000))
-  load += _text(reg1, "@Colored Political Regions & Borders", 25, 712, 850, white)
-  load += _text(reg1, "@Map colour opacity", 25, 680, 750, white)
-  load += [(troop_get_slot, ":opacity", "trp_player", SLOT_OPACITY),
+PARCHMENT, FRAME = 0xE6D5B0, 0x4B3621       # the colours of the game's own windows
+TITLE, HINT = 0x3B2412, 0x5C4A36
+
+
+def _plane(overlay, x, y, w, h, colour, alpha=0xFF):
+  """A flat rectangle (mesh_white_plane is 20 screen units at size 1000) with its lower left corner at x, y."""
+  return ([(create_mesh_overlay, overlay, "mesh_white_plane"),
+           (overlay_set_color, overlay, colour),
+           (overlay_set_alpha, overlay, alpha)] + _place(overlay, x, y, (w * 50, h * 50)))
+
+
+def _panel(x0, y0, x1, y1):
+  """A parchment panel with a dark brown frame, like the game's windows."""
+  return (_plane(reg1, x0 - 2, y0 - 2, x1 - x0 + 4, y1 - y0 + 4, FRAME) +
+          _plane(reg1, x0, y0, x1 - x0, y1 - y0, PARCHMENT, 0xF2))
+
+
+# While one of these windows is open the game does not draw the world map again; it keeps showing the
+# last picture (the fps jump, and a new colour only showed after Done). Read-only windows do not help and
+# let clicks through to the map. So when the mouse is let go after a change, the window closes for a few
+# frames (_show_on_map): the map is drawn with the new values and the map script opens the window again
+# as it was. The windows read the mouse in their run trigger (buttons, the opacity bar, the colour field).
+WINDOW_FLAGS = prsntf_manual_end_only
+WINDOW_SETTINGS, WINDOW_PICKER = 1, 2
+BUTTON, BUTTON_HOVER = 0x3B2412, 0xA0661E
+# Frames the window stays closed. The picture behind the open window is whatever each of the screen's
+# two or three buffers last held: with two frames only one of them got the new map, and the old and new
+# opacity then flickered until Done. Four leaves at least three drawn frames.
+SHOW_FRAMES = 4
+
+
+def _show_on_map(window):
+  """Closes the window for a few frames so the map is drawn with the new values; it then opens again."""
+  return [(troop_set_slot, "trp_player", SLOT_REOPEN_WHICH, window),
+          (troop_set_slot, "trp_player", SLOT_REOPEN, SHOW_FRAMES),
+          (presentation_set_duration, 0)]
+
+
+def _reopened_ops(window):
+  """":reopened" = 1 when the window opens again after _show_on_map (it then keeps its state)."""
+  return [(assign, ":reopened", 0),
+          (try_begin),
+            (troop_slot_eq, "trp_player", SLOT_REOPEN_WHICH, window),
+            (assign, ":reopened", 1),
+            (troop_set_slot, "trp_player", SLOT_REOPEN_WHICH, 0),
+          (try_end)]
+
+
+def _button_text(slot, text, x, y):
+  """A clickable word; _button_run makes it work."""
+  return _text(":button", text, x, y, 850, BUTTON) + [(troop_set_slot, "trp_player", slot, ":button")]
+
+
+def _button_run(slot, x, y, width, action):
+  """Run trigger part of a _button_text: lights up under the mouse; pressing and letting go on it runs
+  action. (Acting on the press would close the window with the button still down, and letting it go
+  would then reach the map and send the party there.) _release_ops must end the run trigger."""
+  return [(troop_get_slot, ":button", "trp_player", slot),
+          (try_begin),
+            (is_between, ":mx", x - 6, x + width + 6),
+            (is_between, ":my", y - 8, y + 24),
+            (overlay_set_color, ":button", BUTTON_HOVER),
+            (try_begin),
+              (key_clicked, key_left_mouse_button),
+              (troop_set_slot, "trp_player", SLOT_PRESSED, slot),
+            (else_try),
+              (neg|key_is_down, key_left_mouse_button),
+              (troop_slot_eq, "trp_player", SLOT_PRESSED, slot),
+              (troop_set_slot, "trp_player", SLOT_PRESSED, 0)] + action + [
+            (try_end),
+          (else_try),
+            (overlay_set_color, ":button", BUTTON),
+          (try_end)]
+
+
+def _release_ops():
+  """End of a run trigger: a press let go anywhere else no longer counts for a button."""
+  return [(try_begin),
+            (neg|key_is_down, key_left_mouse_button),
+            (troop_set_slot, "trp_player", SLOT_PRESSED, 0),
+          (try_end)]
+
+
+# the opacity bar of the settings window
+TRACK_X, TRACK_Y, TRACK_W, TRACK_H = 25, 640, 280, 8
+
+
+def _opacity_view_ops(value):
+  """Shows an opacity (0-100) with the bar's handle and the percent text. Overlays are only moved here,
+  like the picker's markers (an earlier filled bar resized every frame, and that window flickered)."""
+  return [(store_mul, ":w", value, TRACK_W), (val_div, ":w", 100),
+          (troop_get_slot, ":handle", "trp_player", SLOT_SLIDER),
+          (store_add, ":x", ":w", TRACK_X - 3),
+          (position_set_x, pos1, ":x"), (position_set_y, pos1, TRACK_Y - 5), (overlay_set_position, ":handle", pos1),
+          (assign, reg1, value),
+          (troop_get_slot, ":text", "trp_player", SLOT_VALUE_TEXT),
+          (overlay_set_text, ":text", "@{reg1}%")]
+
+
+def settings_presentation(default_opacity):
+  """The settings window: a small panel in the top left corner with the map colour opacity bar. Letting
+  go of the bar shows the value on the map; Done saves, Cancel, Esc or Ctrl+1 again go back to the saved
+  value. Screen units are 1000 wide and 750 high."""
+  player = "trp_player"
+  load = [(set_fixed_point_multiplier, 1000)] + _reopened_ops(WINDOW_SETTINGS) + _panel(10, 540, 370, 740)
+  load += _text(reg1, "@Colored Political Regions & Borders", 25, 712, 850, TITLE)
+  load += _text(reg1, "@Map colour opacity", 25, 680, 750, 0x000000)
+  load += _plane(reg1, TRACK_X - 1, TRACK_Y - 1, TRACK_W + 2, TRACK_H + 2, FRAME)
+  load += _plane(reg1, TRACK_X, TRACK_Y, TRACK_W, TRACK_H, 0xCBB68C)
+  load += _plane(":handle", 0, 0, 6, TRACK_H + 10, FRAME) + [(troop_set_slot, player, SLOT_SLIDER, ":handle")]
+  load += _text(":value", "@{reg1}%", TRACK_X + TRACK_W + 14, TRACK_Y - 4, 800, 0x000000)
+  load += [(troop_set_slot, player, SLOT_VALUE_TEXT, ":value")]
+  load += _text(reg1, "@Let go of the bar to see it on the map. Done saves it.", 25, 594, 650, HINT)
+  load += _text(reg1, "@Esc cancels.   Ctrl+2: your kingdom's colour.", 25, 574, 650, HINT)
+  load += _button_text(SLOT_DONE, "@Done", 25, 548) + _button_text(SLOT_CANCEL, "@Cancel", 95, 548)
+  # the saved opacity, or when opening again after _show_on_map the one being tried
+  load += [(troop_get_slot, ":opacity", player, SLOT_OPACITY),
            (try_begin),
              (le, ":opacity", 0),
              (assign, ":opacity", default_opacity + 1),
            (try_end),
-           (val_sub, ":opacity", 1),
-           (create_slider_overlay, ":slider", 0, 100),
-           (overlay_set_val, ":slider", ":opacity"),
-           (troop_set_slot, "trp_player", SLOT_SLIDER, ":slider")] + _place(":slider", 135, 630, (900, 1000))
-  load += [(assign, reg1, ":opacity")] + _text(":value", "@{reg1}%", 255, 624, 800, white)
-  load += [(troop_set_slot, "trp_player", SLOT_VALUE_TEXT, ":value")]
-  load += _text(reg1, "@Ctrl+1 or Esc closes. Saved with your game.", 25, 586, 650, grey)
-  load += [(create_button_overlay, ":done", "@Done", 0),
-           (troop_set_slot, "trp_player", SLOT_DONE, ":done")] + _place(":done", 25, 552, (850, 850))
-  if white is not None:
-    load += [(overlay_set_color, ":done", white)]
-  load += [(troop_set_slot, "trp_player", SLOT_JUST_OPENED, 1),
+           (try_begin),
+             (eq, ":reopened", 1),
+             (troop_slot_ge, player, SLOT_OPACITY_PREVIEW, 1),
+             (troop_get_slot, ":opacity", player, SLOT_OPACITY_PREVIEW),
+           (else_try),
+             (eq, ":reopened", 0),
+             (troop_set_slot, player, SLOT_OPACITY_PREVIEW, 0),
+             (troop_set_slot, player, SLOT_SHOWN_OPACITY, ":opacity"),
+           (try_end),
+           (val_sub, ":opacity", 1)] + _opacity_view_ops(":opacity")
+  load += [(troop_set_slot, player, SLOT_OPACITY_DRAG, 0),
+           (troop_set_slot, player, SLOT_PRESSED, 0),
+           (troop_set_slot, player, SLOT_JUST_OPENED, 1),
            (presentation_set_duration, 999999)]
 
-  change = [(store_trigger_param_1, ":object"),
-            (store_trigger_param_2, ":value"),
-            (try_begin),
-              (troop_slot_eq, "trp_player", SLOT_SLIDER, ":object"),
-              (store_add, ":stored", ":value", 1),
-              (troop_set_slot, "trp_player", SLOT_OPACITY, ":stored"),
-              (assign, reg1, ":value"),
-              (troop_get_slot, ":text", "trp_player", SLOT_VALUE_TEXT),
-              (overlay_set_text, ":text", "@{reg1}%"),
-              (call_script, "script_" + SCRIPT_NAME),
-            (else_try),
-              (troop_slot_eq, "trp_player", SLOT_DONE, ":object"),
-              (presentation_set_duration, 0),
-            (try_end)]
-
-  # Esc or Ctrl+1 again closes the window
-  run = [(try_begin),
-           (troop_slot_eq, "trp_player", SLOT_JUST_OPENED, 1),
-           (troop_set_slot, "trp_player", SLOT_JUST_OPENED, 0),
+  cancel = [(troop_set_slot, player, SLOT_OPACITY_PREVIEW, 0),
+            (call_script, "script_" + SCRIPT_NAME),
+            (presentation_set_duration, 0)]
+  done = [(troop_get_slot, ":stored", player, SLOT_OPACITY_PREVIEW),
+          (try_begin),
+            (gt, ":stored", 0),
+            (troop_set_slot, player, SLOT_OPACITY, ":stored"),
+          (try_end),
+          (troop_set_slot, player, SLOT_OPACITY_PREVIEW, 0),
+          (presentation_set_duration, 0)]
+  run = [(set_fixed_point_multiplier, 1000),
+         (mouse_get_position, pos1),
+         (position_get_x, ":mx", pos1),
+         (position_get_y, ":my", pos1),
+         (try_begin),
+           (troop_slot_eq, player, SLOT_JUST_OPENED, 1),
+           (troop_set_slot, player, SLOT_JUST_OPENED, 0),
          (else_try),
            (this_or_next|key_clicked, key_escape),
-           (key_clicked, key_1),
-           (presentation_set_duration, 0),
-         (try_end)]
-  return (prsntf_manual_end_only, 0, [(ti_on_presentation_load, load),
-                                      (ti_on_presentation_event_state_change, change),
-                                      (ti_on_presentation_run, run)])
+           (key_clicked, key_1)] + cancel + [
+         (else_try),
+           # the bar: press on it and drag
+           (try_begin),
+             (key_clicked, key_left_mouse_button),
+             (is_between, ":mx", TRACK_X - 8, TRACK_X + TRACK_W + 9),
+             (is_between, ":my", TRACK_Y - 10, TRACK_Y + TRACK_H + 11),
+             (troop_set_slot, player, SLOT_OPACITY_DRAG, 1),
+           (try_end),
+           (try_begin),
+             (troop_slot_eq, player, SLOT_OPACITY_DRAG, 1),
+             (store_sub, ":value", ":mx", TRACK_X), (val_mul, ":value", 100), (val_div, ":value", TRACK_W),
+             (val_clamp, ":value", 0, 101),
+             (store_add, ":stored", ":value", 1),
+             (neg|troop_slot_eq, player, SLOT_OPACITY_PREVIEW, ":stored"),     # only when it changes
+             (troop_set_slot, player, SLOT_OPACITY_PREVIEW, ":stored")] + _opacity_view_ops(":value") + [
+           (try_end),
+           # let go: show it on the map, if the map does not show it yet
+           (try_begin),
+             (neg|key_is_down, key_left_mouse_button),
+             (troop_slot_eq, player, SLOT_OPACITY_DRAG, 1),
+             (troop_set_slot, player, SLOT_OPACITY_DRAG, 0),
+             (troop_get_slot, ":stored", player, SLOT_OPACITY_PREVIEW),
+             (gt, ":stored", 0),
+             (neg|troop_slot_eq, player, SLOT_SHOWN_OPACITY, ":stored"),
+             (troop_set_slot, player, SLOT_SHOWN_OPACITY, ":stored")] + _show_on_map(WINDOW_SETTINGS) + [
+           (try_end)] + _button_run(SLOT_DONE, 25, 548, 40, done) + _button_run(SLOT_CANCEL, 95, 548, 50, cancel) + [
+         (try_end)] + _release_ops()
+  return (WINDOW_FLAGS, 0, [(ti_on_presentation_load, load),
+                            (ti_on_presentation_run, run)])
+
+
+# the kingdom colour picker, in the top right corner (screen units, 1000 x 750)
+PICK_X0, PICK_X1, PICK_Y1 = 585, 990, 740            # panel; its bottom depends on the content
+FIELD_X, FIELD_Y, FIELD_W, FIELD_H = 600, 525, 300, 165
+FIELD_COLS, FIELD_ROWS = 50, 15                      # cells of 6 x 11 units
+BAR_X, BAR_W = 915, 24
+BAR_CELLS = 15
+
+
+def _center_ranges(centers):
+  """Runs of consecutive party ids among the centers, as (first, last + 1)."""
+  ids = sorted(party for party, _, _ in centers)
+  runs = []
+  for party in ids:
+    if runs and runs[-1][1] == party:
+      runs[-1][1] = party + 1
+    else:
+      runs.append([party, party + 1])
+  return runs
+
+
+def _picker_refresh_ops(preview):
+  """Shows the picker's hue, saturation and lightness: markers, lightness bar, swatch and RGB values.
+  With preview, the colour is also put on the kingdom (and so on the map) until Done or Cancel."""
+  player = "trp_player"
+  ops = [(set_fixed_point_multiplier, 1000),
+         (troop_get_slot, ":h", player, SLOT_HUE),
+         (troop_get_slot, ":s", player, SLOT_SAT),
+         (troop_get_slot, ":l", player, SLOT_LIGHT),
+         # lightness bar in the current hue and saturation, light at the top
+         (try_for_range, ":k", 0, BAR_CELLS),
+           (store_mul, ":cell_l", ":k", 1000), (val_div, ":cell_l", BAR_CELLS - 1),
+           (call_script, "script_" + HSL_SCRIPT, ":h", ":s", ":cell_l"),
+           (store_add, ":slot", SLOT_BAR_CELLS, ":k"),
+           (troop_get_slot, ":cell", player, ":slot"),
+           (overlay_set_color, ":cell", reg0),
+         (try_end),
+         # markers: centred on the choice
+         (store_mul, ":mx", ":h", FIELD_W), (val_div, ":mx", 360), (val_add, ":mx", FIELD_X - 4),
+         (store_mul, ":my", ":s", FIELD_H), (val_div, ":my", 1000), (val_add, ":my", FIELD_Y - 4),
+         (troop_get_slot, ":mark", player, SLOT_FIELD_MARK),
+         (position_set_x, pos1, ":mx"), (position_set_y, pos1, ":my"), (overlay_set_position, ":mark", pos1),
+         (val_add, ":mx", 2), (val_add, ":my", 2),
+         (troop_get_slot, ":mark", player, SLOT_FIELD_MARK_IN),
+         (position_set_x, pos1, ":mx"), (position_set_y, pos1, ":my"), (overlay_set_position, ":mark", pos1),
+         (store_mul, ":my", ":l", FIELD_H), (val_div, ":my", 1000), (val_add, ":my", FIELD_Y - 2),
+         (troop_get_slot, ":mark", player, SLOT_BAR_MARK),
+         (position_set_x, pos1, BAR_X - 3), (position_set_y, pos1, ":my"), (overlay_set_position, ":mark", pos1),
+         (val_add, ":my", 1),
+         (troop_get_slot, ":mark", player, SLOT_BAR_MARK_IN),
+         (position_set_x, pos1, BAR_X - 2), (position_set_y, pos1, ":my"), (overlay_set_position, ":mark", pos1),
+         # the colour itself
+         (call_script, "script_" + HSL_SCRIPT, ":h", ":s", ":l"),
+         (assign, ":colour", reg0),
+         (troop_get_slot, ":swatch", player, SLOT_SWATCH),
+         (overlay_set_color, ":swatch", ":colour"),
+         (store_div, reg1, ":colour", 0x10000),
+         (store_div, reg2, ":colour", 0x100), (val_mod, reg2, 0x100),
+         (store_mod, reg3, ":colour", 0x100),
+         (troop_get_slot, ":text", player, SLOT_RGB_TEXT),
+         (overlay_set_text, ":text", "@R {reg1}   G {reg2}   B {reg3}")]
+  if preview:
+    ops += [(store_add, ":stored", ":colour", 1),
+            (troop_set_slot, player, SLOT_PREVIEW_COLOUR, ":stored"),
+            (call_script, "script_" + SCRIPT_NAME)]
+  return ops
+
+
+def _rgb_to_hsl_ops(colour):
+  """Hue, saturation and lightness of a 0xRRGGBB colour into the picker's slots."""
+  player = "trp_player"
+  ops = [(store_div, ":r", colour, 0x10000), (val_mod, ":r", 0x100),
+         (store_div, ":g", colour, 0x100), (val_mod, ":g", 0x100),
+         (store_mod, ":b", colour, 0x100)]
+  for channel in (":r", ":g", ":b"):
+    ops += [(val_mul, channel, 1000), (val_div, channel, 255)]
+  ops += [(assign, ":max", ":r"), (val_max, ":max", ":g"), (val_max, ":max", ":b"),
+          (assign, ":min", ":r"), (val_min, ":min", ":g"), (val_min, ":min", ":b"),
+          (store_add, ":l", ":max", ":min"), (val_div, ":l", 2),
+          (store_sub, ":d", ":max", ":min"),
+          (assign, ":h", 0), (assign, ":s", 0),
+          (try_begin),
+            (gt, ":d", 0),
+            (store_mul, ":den", ":l", 2), (val_sub, ":den", 1000), (val_abs, ":den"), (store_sub, ":den", 1000, ":den"),
+            (val_max, ":den", 1),
+            (store_mul, ":s", ":d", 1000), (val_div, ":s", ":den"), (val_clamp, ":s", 0, 1001),
+            (try_begin),
+              (eq, ":max", ":r"),
+              (store_sub, ":h", ":g", ":b"), (val_mul, ":h", 60), (val_div, ":h", ":d"),
+            (else_try),
+              (eq, ":max", ":g"),
+              (store_sub, ":h", ":b", ":r"), (val_mul, ":h", 60), (val_div, ":h", ":d"), (val_add, ":h", 120),
+            (else_try),
+              (store_sub, ":h", ":r", ":g"), (val_mul, ":h", 60), (val_div, ":h", ":d"), (val_add, ":h", 240),
+            (try_end),
+            (val_add, ":h", 360), (val_mod, ":h", 360),
+          (try_end),
+          (troop_set_slot, player, SLOT_HUE, ":h"),
+          (troop_set_slot, player, SLOT_SAT, ":s"),
+          (troop_set_slot, player, SLOT_LIGHT, ":l")]
+  return ops
+
+
+def picker_presentation(kingdom, centers):
+  """The kingdom colour picker (Ctrl+2): a field of hues (across) and saturations (down), a lightness bar,
+  a swatch with the RGB values, Done and Cancel. The colour goes on the kingdom at once and shows on the
+  map when the mouse is let go (_show_on_map); Done keeps it (saved with the game), Cancel or Esc puts the
+  old colour back. Without a kingdom of the player's own (a town, castle or village of
+  fac_player_supporters_faction), a short note instead."""
+  player = "trp_player"
+  load = [(set_fixed_point_multiplier, 1000)] + _reopened_ops(WINDOW_PICKER) + [
+          (troop_set_slot, player, SLOT_PICK_OPENED, 1),
+          (troop_set_slot, player, SLOT_DRAG, 0),
+          (troop_set_slot, player, SLOT_PICK_DONE, -1),
+          (troop_set_slot, player, SLOT_PICK_CANCEL, -1),
+          (troop_set_slot, player, SLOT_PRESSED, 0),
+          (try_begin),
+            (eq, ":reopened", 0),
+            (troop_set_slot, player, SLOT_PREVIEW_COLOUR, 0),
+            (troop_set_slot, player, SLOT_OLD_COLOUR, -1),
+          (try_end),
+          (assign, ":owned", 0)]
+  if kingdom is not None:
+    for first, end in _center_ranges(centers):
+      load += [(try_for_range, ":center", _tag(tag_party, first), _tag(tag_party, end)),
+                 (store_faction_of_party, ":faction", ":center"),
+                 (eq, ":faction", kingdom),
+                 (val_add, ":owned", 1),
+               (try_end)]
+  load += [(try_begin),
+             (eq, ":owned", 0)]
+  load += _panel(PICK_X0, 600, PICK_X1, PICK_Y1)
+  load += _text(reg1, "@Your kingdom's colour", PICK_X0 + 15, PICK_Y1 - 28, 850, TITLE)
+  load += _text(reg1, "@To choose your kingdom's colour you need a kingdom", PICK_X0 + 15, 680, 700, 0x000000)
+  load += _text(reg1, "@of your own: hold a town, castle or village.", PICK_X0 + 15, 660, 700, 0x000000)
+  load += _button_text(SLOT_PICK_CANCEL, "@Close", PICK_X0 + 15, 612)
+  load += [(else_try)]
+  load += _panel(PICK_X0, 422, PICK_X1, PICK_Y1)
+  load += _text(reg1, "@Your kingdom's colour", PICK_X0 + 15, PICK_Y1 - 28, 850, TITLE)
+  load += [(try_begin),
+             (eq, ":reopened", 0),
+             (faction_get_color, ":old", kingdom),
+             (troop_set_slot, player, SLOT_OLD_COLOUR, ":old"),
+             (store_add, ":shown", ":old", 1),
+             (troop_set_slot, player, SLOT_SHOWN_COLOUR, ":shown")] + _rgb_to_hsl_ops(":old") + [
+           (try_end)]
+  # the field: hue across, saturation from grey (bottom) to full (top), at half lightness
+  cw, ch, bh = FIELD_W // FIELD_COLS, FIELD_H // FIELD_ROWS, FIELD_H // BAR_CELLS
+  load += _plane(reg1, FIELD_X - 1, FIELD_Y - 1, FIELD_W + 2, FIELD_H + 2, 0x000000)
+  load += _plane(reg1, BAR_X - 1, FIELD_Y - 1, BAR_W + 2, FIELD_H + 2, 0x000000)
+  load += [(try_for_range, ":j", 0, FIELD_ROWS),
+             (store_mul, ":cell_s", ":j", 1000), (val_div, ":cell_s", FIELD_ROWS - 1),
+             (store_mul, ":y", ":j", ch), (val_add, ":y", FIELD_Y),
+             (try_for_range, ":i", 0, FIELD_COLS),
+               (store_mul, ":cell_h", ":i", 360), (val_add, ":cell_h", 180), (val_div, ":cell_h", FIELD_COLS),
+               (call_script, "script_" + HSL_SCRIPT, ":cell_h", ":cell_s", 500),
+               (create_mesh_overlay, ":cell", "mesh_white_plane"),
+               (overlay_set_color, ":cell", reg0),
+               (store_mul, ":x", ":i", cw), (val_add, ":x", FIELD_X),
+               (position_set_x, pos1, ":x"), (position_set_y, pos1, ":y"), (overlay_set_position, ":cell", pos1),
+               (position_set_x, pos1, cw * 50 + 25), (position_set_y, pos1, ch * 50 + 25),
+               (overlay_set_size, ":cell", pos1),
+             (try_end),
+           (try_end),
+           # the lightness bar, dark at the bottom; refresh colours it
+           (try_for_range, ":k", 0, BAR_CELLS),
+             (create_mesh_overlay, ":cell", "mesh_white_plane"),
+             (store_add, ":slot", SLOT_BAR_CELLS, ":k"),
+             (troop_set_slot, player, ":slot", ":cell"),
+             (store_mul, ":y", ":k", bh), (val_add, ":y", FIELD_Y),
+             (position_set_x, pos1, BAR_X), (position_set_y, pos1, ":y"), (overlay_set_position, ":cell", pos1),
+             (position_set_x, pos1, BAR_W * 50), (position_set_y, pos1, bh * 50 + 25),
+             (overlay_set_size, ":cell", pos1),
+           (try_end)]
+  # markers (a black square with a white middle, a black line with a white middle), placed by refresh
+  for slot, w, h, colour in ((SLOT_FIELD_MARK, 8, 8, 0x000000), (SLOT_FIELD_MARK_IN, 4, 4, 0xFFFFFF),
+                             (SLOT_BAR_MARK, BAR_W + 6, 4, 0x000000), (SLOT_BAR_MARK_IN, BAR_W + 4, 2, 0xFFFFFF)):
+    load += _plane(":mark", 0, 0, w, h, colour) + [(troop_set_slot, player, slot, ":mark")]
+  # swatch, RGB values, hint, buttons
+  load += _plane(reg1, FIELD_X - 1, 469, 62, 37, 0x000000)
+  load += _plane(":swatch", FIELD_X, 470, 60, 35, 0xFFFFFF) + [(troop_set_slot, player, SLOT_SWATCH, ":swatch")]
+  load += _text(":rgb", "@R {reg1}   G {reg2}   B {reg3}", FIELD_X + 75, 488, 700, 0x000000)
+  load += [(troop_set_slot, player, SLOT_RGB_TEXT, ":rgb")]
+  load += _text(reg1, "@Let go of the mouse to see it on the map. Done saves, Esc cancels.", FIELD_X, 430, 600, HINT)
+  load += _button_text(SLOT_PICK_DONE, "@Done", 900, 486) + _button_text(SLOT_PICK_CANCEL, "@Cancel", 900, 458)
+  load += _picker_refresh_ops(preview=False)
+  load += [(try_end),
+           (presentation_set_duration, 999999)]
+
+  cancel = [(troop_set_slot, player, SLOT_PREVIEW_COLOUR, 0),
+            (troop_get_slot, ":old", player, SLOT_OLD_COLOUR)]
+  if kingdom is not None:
+    cancel += [(try_begin),
+                 (ge, ":old", 0),
+                 (faction_set_color, kingdom, ":old"),
+               (try_end)]
+  cancel += [(call_script, "script_" + SCRIPT_NAME),
+             (presentation_set_duration, 0)]
+  done = [(troop_get_slot, ":want", player, SLOT_PREVIEW_COLOUR),
+          (try_begin),
+            (gt, ":want", 0),
+            (troop_set_slot, player, SLOT_KINGDOM_COLOUR, ":want"),
+          (try_end),
+          (troop_set_slot, player, SLOT_PREVIEW_COLOUR, 0),
+          (presentation_set_duration, 0)]
+
+  # Esc or Ctrl+2 again cancels; clicks and drags in the field or the bar pick, letting go shows it
+  run = [(set_fixed_point_multiplier, 1000),
+         (mouse_get_position, pos1),
+         (position_get_x, ":mx", pos1),
+         (position_get_y, ":my", pos1),
+         (try_begin),
+           (troop_slot_eq, player, SLOT_PICK_OPENED, 1),
+           (troop_set_slot, player, SLOT_PICK_OPENED, 0),
+         (else_try),
+           (this_or_next|key_clicked, key_escape),
+           (key_clicked, key_2)] + cancel + [
+         (else_try),
+           (troop_slot_eq, player, SLOT_OLD_COLOUR, -1)] + _button_run(SLOT_PICK_CANCEL, PICK_X0 + 15, 612, 45, cancel) + [
+         (else_try),
+           (try_begin),
+             (key_clicked, key_left_mouse_button),
+             (is_between, ":mx", FIELD_X - 5, BAR_X + BAR_W + 6),
+             (is_between, ":my", FIELD_Y - 5, FIELD_Y + FIELD_H + 6),
+             (try_begin),
+               (lt, ":mx", BAR_X - 4),
+               (troop_set_slot, player, SLOT_DRAG, 1),
+             (else_try),
+               (troop_set_slot, player, SLOT_DRAG, 2),
+             (try_end),
+           (try_end),
+           (troop_get_slot, ":drag", player, SLOT_DRAG),
+           (try_begin),
+             (gt, ":drag", 0),
+             (key_is_down, key_left_mouse_button),
+             (try_begin),
+               (eq, ":drag", 1),
+               (store_sub, ":h", ":mx", FIELD_X), (val_mul, ":h", 360), (val_div, ":h", FIELD_W),
+               (val_clamp, ":h", 0, 360),
+               (store_sub, ":s", ":my", FIELD_Y), (val_mul, ":s", 1000), (val_div, ":s", FIELD_H),
+               (val_clamp, ":s", 0, 1001),
+               (troop_set_slot, player, SLOT_HUE, ":h"),
+               (troop_set_slot, player, SLOT_SAT, ":s"),
+             (else_try),
+               (store_sub, ":l", ":my", FIELD_Y), (val_mul, ":l", 1000), (val_div, ":l", FIELD_H),
+               (val_clamp, ":l", 0, 1001),
+               (troop_set_slot, player, SLOT_LIGHT, ":l"),
+             (try_end)] + _picker_refresh_ops(preview=True) + [
+           (else_try),
+             (gt, ":drag", 0),
+             (troop_set_slot, player, SLOT_DRAG, 0),
+             (troop_get_slot, ":want", player, SLOT_PREVIEW_COLOUR),
+             (gt, ":want", 0),
+             (neg|troop_slot_eq, player, SLOT_SHOWN_COLOUR, ":want"),     # not shown on the map yet
+             (troop_set_slot, player, SLOT_SHOWN_COLOUR, ":want")] + _show_on_map(WINDOW_PICKER) + [
+           (try_end)] + _button_run(SLOT_PICK_DONE, 900, 486, 40, done) + _button_run(SLOT_PICK_CANCEL, 900, 458, 50, cancel) + [
+         (try_end)] + _release_ops()
+  return (WINDOW_FLAGS, 0, [(ti_on_presentation_load, load),
+                            (ti_on_presentation_run, run)])
 
 
 # ---------------------------------------------------------------------------- appending to text files
@@ -412,8 +903,9 @@ def install(folder, opacity=DEFAULT_OPACITY, log=print):
   if any(line.startswith(SCRIPT_NAME + " ") for line in scripts.lines):
     raise PatchError("scripts.txt already contains %s but no install record was found." % SCRIPT_NAME)
 
-  script_id = scripts.count
-  presentation_id = presentations.count
+  script_ids = {SCRIPT_NAME: scripts.count, HSL_SCRIPT: scripts.count + 1}
+  presentation_ids = {PRESENTATION_NAME: presentations.count, PICKER_NAME: presentations.count + 1}
+  kingdom = _tag(tag_faction, mod.factions[PLAYER_KINGDOM]) if PLAYER_KINGDOM in mod.factions else None
   quick_ids = {}
 
   def resolve(symbol):
@@ -421,10 +913,10 @@ def install(folder, opacity=DEFAULT_OPACITY, log=print):
       if symbol not in quick_ids:
         quick_ids[symbol] = quick.append([quick_string_line(symbol[1:])])
       return _tag(tag_quick_string, quick_ids[symbol])
-    if symbol == "script_" + SCRIPT_NAME:
-      return _tag(tag_script, script_id)
-    if symbol == "prsnt_" + PRESENTATION_NAME:
-      return _tag(tag_presentation, presentation_id)
+    if symbol.startswith("script_") and symbol[7:] in script_ids:
+      return _tag(tag_script, script_ids[symbol[7:]])
+    if symbol.startswith("prsnt_") and symbol[6:] in presentation_ids:
+      return _tag(tag_presentation, presentation_ids[symbol[6:]])
     if symbol == "trp_player":
       return _tag(tag_troop, 0)
     if symbol.startswith("mesh_") and symbol in mod.meshes:
@@ -435,12 +927,14 @@ def install(folder, opacity=DEFAULT_OPACITY, log=print):
   for name in parameter_names(len(mod.centers), mod.num_factions):
     resolve("@" + name)
   scripts.append(["%s -1" % SCRIPT_NAME,
-                  compile_block(update_script_ops(mod.centers, mod.num_factions, opacity), resolve)])
+                  compile_block(update_script_ops(mod.centers, mod.num_factions, opacity, kingdom), resolve)])
+  scripts.append(["%s -1" % HSL_SCRIPT, compile_block(hsl_script_ops(), resolve)])
   triggers.append(["%f %s" % (0.0, compile_block([(call_script, "script_" + SCRIPT_NAME)], resolve))])
-  flags, mesh, presentation_triggers = settings_presentation(opacity, "mesh_white_plane" in mod.meshes)
-  block = ["prsnt_%s %d %d %d" % (PRESENTATION_NAME, flags, mesh, len(presentation_triggers))]
-  block += ["%f %s" % (interval, compile_block(ops, resolve)) for interval, ops in presentation_triggers]
-  presentations.append(block + ["", ""])
+  for name, (flags, mesh, presentation_triggers) in ((PRESENTATION_NAME, settings_presentation(opacity)),
+                                                    (PICKER_NAME, picker_presentation(kingdom, mod.centers))):
+    block = ["prsnt_%s %d %d %d" % (name, flags, mesh, len(presentation_triggers))]
+    block += ["%f %s" % (interval, compile_block(ops, resolve)) for interval, ops in presentation_triggers]
+    presentations.append(block + ["", ""])
 
   variant = mod.variant()
   plan, shaders = prepare_shaders(mod, variant)

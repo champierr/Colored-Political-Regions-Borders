@@ -21,14 +21,21 @@ the borders stay.
   change made during play, such as a new player kingdom.
 - Ownership updates live, every frame.
 - Sea and rivers are left untouched.
-- **Ctrl+1** on the world map opens a small settings panel (top left) with a map colour opacity slider
-  (0-100 %); Esc or Ctrl+1 closes it. The setting is saved with your game. The patcher sets the starting value for new games.
+- **Ctrl+1** on the world map opens a small settings panel (top left) with a map colour opacity bar
+  (0-100 %). Let go of the bar and the map shows it; **Done** saves it with your game, Esc or **Cancel**
+  goes back. The patcher sets the starting value for new games.
+- **Ctrl+2** picks your own kingdom's colour (top right): click or drag in the colour field and the
+  lightness bar, let go, and your land, borders and town names show it. **Done** saves it with your game,
+  Esc or **Cancel** brings the old colour back. It needs a kingdom of your own (a town, castle or village
+  you hold for yourself); otherwise the panel says so.
+
+![Ctrl+2: your kingdom's colour](docs/images/gallery_kingdom_colour.jpg)
 
 ## Install
 
 ### Native
 Subscribe to **Colored Political Regions & Borders** on the Steam Workshop, or extract
-`Colored_Political_Regions_and_Borders_Native_v1.1.0.zip` from the
+`Colored_Political_Regions_and_Borders_Native_v1.2.0.zip` from the
 [Releases](https://github.com/champierr/Colored-Political-Regions-Borders/releases/latest) into
 `Mount&Blade Warband\Modules\`. Pick it in the launcher and start a new game.
 
@@ -62,7 +69,8 @@ in game) on Conquest 1453, Diplomacy and two other Calradia based Workshop mods.
 | | |
 |---|---|
 | ![Zoom levels](docs/images/gallery_zoom_levels.jpg) | ![Crusade Against Jihad](docs/images/gallery_crusade_against_jihad.jpg) |
-| ![Border glow](docs/images/gallery_border_glow.jpg) | ![Settings panel](docs/images/gallery_settings_panel.jpg) |
+| ![Border glow](docs/images/gallery_border_glow.jpg) | ![Kingdom colour, before and after](docs/images/gallery_kingdom_colour_compare.jpg) |
+| ![Your realm in your colour](docs/images/gallery_kingdom_colour_map.jpg) | ![Native](docs/images/gallery_native.jpg) |
 
 ## How it works
 The political map is drawn inside the world map terrain shaders, so it is part of the terrain instead of a
@@ -87,11 +95,22 @@ Needs Python 3.10+ and `fxc.exe` from the
 | `python tools/build_shaders.py` | Compiles the shader variants (192, 256, 320 centers) into `patcher/shaders/` |
 | `build_all.bat` | Builds Native from `src/` (Module System 1.171 ported to Python 3) and applies the patcher to it |
 | `python patcher/cprb_patcher.py info\|install\|uninstall <mod folder>` | Patcher from the command line |
-| `python -m PyInstaller --onefile --windowed --name CPRB-Map-Patcher --icon patcher/cprb.ico --add-data "patcher/shaders;shaders" --add-data "patcher/cprb.ico;." patcher/cprb_gui.py` | Builds the .exe |
+| `python tools/build_exe.py <python of the build environment>` | Builds `patcher/dist/CPRB-Map-Patcher.exe` (see below) |
+| `python tools/package_release.py` | Release files in `release/v<version>/` and the Nexus files in `release/nexus/` |
 | `python tools/make_media.py` | Store images, tutorial video and icon from `docs/screens/` |
 
 Look and feel (fade distances, border width and colour, glow) are the `CPRB_*` values at the top of
 `shaders/cprb_map.fxh`.
+
+### Building the patcher exe
+PyInstaller's prebuilt bootloader is used by so many programs, some of them malware, that several antivirus
+engines flag any exe made with it. The release exe is built with a bootloader compiled from source:
+1. Get a MinGW-w64 gcc (for example [w64devkit](https://github.com/skeeto/w64devkit)) and the PyInstaller
+   source of the installed version (`pip download pyinstaller==<version> --no-binary :all: --no-deps`).
+2. In its `bootloader` folder, with gcc on the PATH: `python waf all --gcc --target-arch=64bit`.
+3. Install that PyInstaller into its own environment: `python -m venv --system-site-packages <env>`, then
+   `<env>\Scripts\python -m pip install --no-deps --ignore-installed <source>`.
+4. `python tools/build_exe.py <env>\Scripts\python.exe`
 
 ## Credits
 Mount & Blade: Warband, its Module System and shader source are by TaleWorlds Entertainment.
@@ -114,4 +133,8 @@ listeden modu seç ve **Install / Update**'e bas. Yeni oyun başlatman önerilir
 güncellerse yamayı tekrar uygula.
 
 **Oyun içi ayar:** Dünya haritasında **Ctrl+1** ile açılan pencereden renk opaklığını %0-100 arası
-ayarlayabilirsin. Ayar kayıt dosyasıyla birlikte saklanır.
+ayarlayabilirsin; çubuğu bırakınca harita gösterir, **Done** kayıt dosyana kaydeder, Esc ya da **Cancel** geri alır.
+
+**Krallık rengi:** Kendi krallığın varsa (kendine ait bir şehir, kale ya da köy), **Ctrl+2** ile açılan
+renk seçiciden krallığının rengini seçebilirsin. Fareyi bırakınca toprakların, sınırların ve şehir isimleri değişir;
+**Done** kaydeder, Esc ya da **Cancel** eski rengi geri getirir.
